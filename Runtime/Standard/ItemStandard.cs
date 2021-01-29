@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace MeguminEngine.Standard
+namespace Megumin.GameFramework.Standard
 {
     /// <summary>
     /// 可堆叠的

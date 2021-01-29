@@ -1,0 +1,16 @@
+{
+    "name": "Megumin.GameFramework.ItemModule",
+    "rootNamespace": "",
+    "references": [
+        "GUID:a7ea6e0cfdff706448b2f39196561187"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

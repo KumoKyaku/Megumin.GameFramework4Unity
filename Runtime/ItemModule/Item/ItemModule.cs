@@ -1,30 +1,74 @@
-﻿using System;
+﻿using Megumin.GameFramework.Standard;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
-namespace MeguminEngine.Base
+namespace Megumin.GameFramework.ItemModule
 {
-    public class ItemModule
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="CP"></typeparam>
+    public class ItemModule<CP, ItemConfig, Item>
+        where CP : IConfigProvider<ItemConfig>
+        where ItemConfig : IMeguminItemConfig
+        where Item : IMeguminItem
     {
-        private ItemConfigProvider configProvider;
+        public CP ConfigProvider { get; set; }
 
-        public ItemModule(ItemConfigProvider configProvider)
+        public ItemModule(CP configProvider)
         {
-            this.configProvider = configProvider;
-            Init();
+            ConfigProvider = configProvider;
         }
 
-        public static ItemModule Current { get; set; }
-
-        public Dictionary<long, Item> MyItems { get; } = new Dictionary<long, Item>();
-        internal void Init()
+        public void LogAllConfig()
         {
-            Random random = new Random();
-            //Fake
+            string config = "Config:    ";
+            foreach (var item in ConfigProvider.Config)
+            {
+                config += $"\n {item.Name} | {item.FriendlyName}";
+            }
+
+            Debug.Log(config);
+        }
+
+        /// <summary>
+        /// 物品实例
+        /// </summary>
+        public Dictionary<long, Item> MyItems { get; } = new Dictionary<long, Item>();
+
+        /// <summary>
+        /// 创建模板
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="config"></param>
+        /// <returns></returns>
+        public virtual ItemTemplate<ItemConfig> CreateTemplate(ItemConfig config)
+        {
+            return new ItemTemplate<ItemConfig>(config);
+        }
+    }
+
+    public class TestItemModule : ItemModule<ItemConfigProvider, ItemConfig, Item>
+    {
+        public TestItemModule(ItemConfigProvider configProvider) : base(configProvider)
+        {
+            ConfigProvider = configProvider;
+        }
+
+        public static TestItemModule Current { get; set; }
+
+        /// <summary>
+        /// 添加临时测试物品
+        /// </summary>
+        public void FakeCreateMyItem()
+        {
+            System.Random random = new System.Random();
             int i = 0;
-            foreach (var cfg in configProvider.itemConfigs)
+            foreach (var cfg in ConfigProvider.itemConfigs)
             {
                 var item = new Item(cfg)
                 {

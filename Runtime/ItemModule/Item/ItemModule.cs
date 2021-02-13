@@ -19,11 +19,6 @@ namespace Megumin.GameFramework.ItemModule
     {
         public CP ConfigProvider { get; set; }
 
-        public ItemModule(CP configProvider)
-        {
-            ConfigProvider = configProvider;
-        }
-
         public void LogAllConfig()
         {
             string config = "Config:    ";
@@ -52,33 +47,4 @@ namespace Megumin.GameFramework.ItemModule
         }
     }
 
-    public class TestItemModule : ItemModule<ItemConfigProvider, ItemConfig, Item>
-    {
-        public TestItemModule(ItemConfigProvider configProvider) : base(configProvider)
-        {
-            ConfigProvider = configProvider;
-        }
-
-        public static TestItemModule Current { get; set; }
-
-        /// <summary>
-        /// 添加临时测试物品
-        /// </summary>
-        public void FakeCreateMyItem()
-        {
-            System.Random random = new System.Random();
-            int i = 0;
-            foreach (var cfg in ConfigProvider.itemConfigs)
-            {
-                var item = new Item(cfg)
-                {
-                    ItemInstanceID = i,
-                    Count = random.Next(1, 100),
-                };
-
-                MyItems.Add(item.ItemInstanceID, item);
-                i++;
-            }
-        }
-    }
 }

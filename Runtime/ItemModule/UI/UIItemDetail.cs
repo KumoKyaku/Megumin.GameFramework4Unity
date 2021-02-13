@@ -11,10 +11,10 @@ public class UIItemDetail : MonoBehaviour
     public Text Prop;
     public Text Des;
 
-    internal void SetData(Item data)
+    internal void SetData(IMeguminItem data)
     {
         Title.text = data.Name;
-        Prop.text = data.GetProp(0);
+        //Prop.text = data.GetProp(0);
         Des.text = data.Description;
     }
 }

@@ -23,7 +23,7 @@ public class ItemConfig : MonoBehaviour, IMeguminItemConfig
     /// <summary>
     /// 动态生成
     /// </summary>
-    internal void DynamicGeneration()
+    public void DynamicGeneration()
     {
         
     }

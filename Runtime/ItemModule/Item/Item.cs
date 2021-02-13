@@ -30,11 +30,6 @@ namespace Megumin.GameFramework.ItemModule
     public partial class Item<CFG> : IMeguminItem
         where CFG : IMeguminItemConfig
     {
-        public Item(CFG cfg)
-        {
-            this.Config = cfg;
-        }
-
         public CFG Config { get; protected set; }
 
         public string Name => Config.Name;
@@ -44,25 +39,4 @@ namespace Megumin.GameFramework.ItemModule
         public string Description => Config.Description;
     }
 
-
-
-    public class Item : Item<ItemConfig>, IName, IFriendlyName, IDescribable, IMeguminItem
-    {
-
-        public Item(ItemConfig cfg) : base(cfg)
-        {
-
-        }
-
-        public long ItemInstanceID { get; internal set; }
-        public int Count { get; internal set; }
-
-
-        public string GetProp(int v)
-        {
-            return $"HP +{Count}";
-        }
-
-
-    }
 }

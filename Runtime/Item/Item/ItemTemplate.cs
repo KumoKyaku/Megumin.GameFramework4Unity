@@ -1,13 +1,13 @@
-using Megumin.GameFramework.Standard;
+ï»¿using Megumin.GameFramework.Standard;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Megumin.GameFramework.ItemModule
+namespace Megumin.GameFramework.Item
 {
     /// <summary>
-    /// ÓÃÓÚÈÎÎñÎïÆ·ÏÔÊ¾
-    /// <para>²»ÊÇÅäÖÃ£¬ÒòÎª¿ÉÒÔÖ¸Ê¾ÊıÁ¿£»Ò²²»ÊÇÕæÊµÎïÆ·</para>
+    /// ç”¨äºä»»åŠ¡ç‰©å“æ˜¾ç¤º
+    /// <para>ä¸æ˜¯é…ç½®ï¼Œå› ä¸ºå¯ä»¥æŒ‡ç¤ºæ•°é‡ï¼›ä¹Ÿä¸æ˜¯çœŸå®ç‰©å“</para>
     /// </summary>
     public partial class ItemTemplate<CFG>
         where CFG : IMeguminItemConfig
@@ -18,6 +18,11 @@ namespace Megumin.GameFramework.ItemModule
         }
 
         public CFG Config { get; protected set; }
+    }
+
+    public class VirsualItem
+    {
+
     }
 }
 

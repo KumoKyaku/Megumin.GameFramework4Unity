@@ -1,12 +1,30 @@
-
 {
-    "name": "megumin.gameframework",
-    "displayName": "Megumin.GameFramework",
-    "author": "Kumokyaku",
+    "name": "com.megumin.gameframework",
+    "displayName": "GameFramework",
+    
     "version": "0.0.1",
     "unity": "2019.4",
     "description": "Wizard Fast Created.",
-    "category": "Megumin",
-    "hideInEditor" : false
+    "category": "PackageWizard",
+    
+    "documentationUrl": "https://example.com/",
+    "changelogUrl": "https://example.com/changelog.html",
+    "licensesUrl": "https://example.com/licensing.html",
+    
+    "hideInEditor" : false,
+    
+    "keywords": [
+        "PackageWizard",
+        "GameFramework"
+    ],
+
+    "author": {
+        "name": "Unity",
+        "email": "unity@example.com",
+        "url": "https://www.unity3d.com"
+    }
 }
+
+
+
 

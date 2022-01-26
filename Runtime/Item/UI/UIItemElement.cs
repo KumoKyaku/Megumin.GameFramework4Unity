@@ -1,4 +1,4 @@
-﻿using Megumin.GameFramework.ItemModule;
+﻿using Megumin.GameFramework.Item;
 using System;
 using System.Collections;
 using System.Collections.Generic;

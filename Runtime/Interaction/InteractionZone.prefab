@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 843530861606656002}
-  - component: {fileID: 3254614908947029042}
+  - component: {fileID: 8981003260368111844}
   - component: {fileID: 3888128197686222218}
   - component: {fileID: 1742404949175636202}
   m_Layer: 0
@@ -34,8 +34,8 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &3254614908947029042
-BoxCollider:
+--- !u!135 &8981003260368111844
+SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -45,8 +45,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.37077245, y: 0.7031257, z: 1.1825854}
-  m_Center: {x: 9.72884e-11, y: -0.072667256, z: 0.09129268}
+  m_Radius: 1.5
+  m_Center: {x: 0, y: 0.5, z: 0}
 --- !u!54 &3888128197686222218
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -77,7 +77,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaskLayer:
     serializedVersion: 2
-    m_Bits: 4294967295
-  OnTrigger:
+    m_Bits: 131
+  GameObjectTrigger: 0
+  OnGameObjectTrigger:
     m_PersistentCalls:
       m_Calls: []
+  ElementTrigger: 1
+  OnElementTrigger:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: Megumin.GameFramework.Interaction.InteractionListener,
+          Megumin.GameFramework
+        m_MethodName: OnTriggerChangeDetected
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2

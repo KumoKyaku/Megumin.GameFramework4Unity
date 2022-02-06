@@ -11,6 +11,7 @@ namespace Megumin.GameFramework.Interaction
         {
             public string type;
             public GameObject interactableObject;
+            public IInteractionElement Compment;
         }
 
         private LinkedList<Interaction> _potentialInteractions = new LinkedList<Interaction>(); //To store the objects we the player could potentially interact with
@@ -24,6 +25,14 @@ namespace Megumin.GameFramework.Interaction
         {
             if (entered)
                 AddPotentialInteraction(obj);
+            else
+                RemovePotentialInteraction(obj);
+        }
+
+        public void OnTriggerChangeDetected(bool entered, GameObject obj, IInteractionElement element)
+        {
+            if (entered)
+                AddPotentialInteraction(obj, element);
             else
                 RemovePotentialInteraction(obj);
         }
@@ -44,11 +53,12 @@ namespace Megumin.GameFramework.Interaction
             RequestUpdateUI(_potentialInteractions.Count > 0);
         }
 
-        private void AddPotentialInteraction(GameObject obj)
+        private void AddPotentialInteraction(GameObject obj, IInteractionElement element = null)
         {
             Interaction newPotentialInteraction = new Interaction();
             newPotentialInteraction.interactableObject = obj;
             newPotentialInteraction.type = obj.tag;
+            newPotentialInteraction.Compment = element;
 
             if (true)
             {

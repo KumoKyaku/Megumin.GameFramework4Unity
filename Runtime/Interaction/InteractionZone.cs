@@ -10,23 +10,84 @@ namespace Megumin.GameFramework.Interaction
     /// </summary>
     public class InteractionZone : MonoBehaviour
     {
-		public LayerMask MaskLayer = -1;
-		public UnityEvent<bool, GameObject> OnTrigger = default;
+        public LayerMask MaskLayer = -1;
 
-		private void OnTriggerEnter(Collider other)
-		{
-			if ((1 << other.gameObject.layer & MaskLayer) != 0)
-			{
-				OnTrigger?.Invoke(true, other.gameObject);
-			}
-		}
+        [Space]
+        public bool GameObjectTrigger = false;
+        public UnityEvent<bool, GameObject> OnGameObjectTrigger = default;
 
-		private void OnTriggerExit(Collider other)
-		{
-			if ((1 << other.gameObject.layer & MaskLayer) != 0)
-			{
-				OnTrigger?.Invoke(false, other.gameObject);
-			}
-		}
-	}
+        public bool ElementTrigger = true;
+        public bool AlsoFindParentElement = false;
+        public UnityEvent<bool, GameObject, IInteractionElement> OnElementTrigger = default;
+
+        private void OnTriggerEnter(Collider other)
+        {
+            if ((1 << other.gameObject.layer & MaskLayer) != 0)
+            {
+
+            }
+            else
+            {
+                return;
+            }
+
+            if (GameObjectTrigger)
+            {
+                OnGameObjectTrigger?.Invoke(true, other.gameObject);
+            }
+
+            if (ElementTrigger)
+            {
+                IInteractionElement comp = null;
+                if (AlsoFindParentElement)
+                {
+                    comp = other.GetComponentInParent<IInteractionElement>();
+                }
+                else
+                {
+                    comp = other.GetComponent<IInteractionElement>();
+                }
+
+                if (comp is Behaviour behaviour && behaviour && behaviour.enabled)
+                {
+                    OnElementTrigger?.Invoke(true, behaviour.gameObject, comp);
+                }
+            }
+        }
+
+        private void OnTriggerExit(Collider other)
+        {
+            if ((1 << other.gameObject.layer & MaskLayer) != 0)
+            {
+
+            }
+            else
+            {
+                return;
+            }
+
+            if (GameObjectTrigger)
+            {
+                OnGameObjectTrigger?.Invoke(false, other.gameObject);
+            }
+
+            if (ElementTrigger)
+            {
+                IInteractionElement comp = null;
+                if (AlsoFindParentElement)
+                {
+                    comp = other.GetComponentInParent<IInteractionElement>();
+                }
+                else
+                {
+                    comp = other.GetComponent<IInteractionElement>();
+                }
+
+                if (comp is Behaviour behaviour && behaviour && behaviour.enabled)
+                {
+                    OnElementTrigger?.Invoke(false, behaviour.gameObject, comp);
+                }
+            }
+        }
+    }
 }

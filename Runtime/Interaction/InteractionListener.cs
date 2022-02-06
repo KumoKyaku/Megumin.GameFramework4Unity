@@ -5,16 +5,17 @@ using UnityEngine;
 
 namespace Megumin.GameFramework.Interaction
 {
+    public class Interaction
+    {
+        public string type;
+        public GameObject interactableObject;
+        public IInteractionElement Compment;
+    }
+
     public class InteractionListener : MonoBehaviour
     {
-        public class Interaction
-        {
-            public string type;
-            public GameObject interactableObject;
-            public IInteractionElement Compment;
-        }
-
         public LinkedList<Interaction> _potentialInteractions = new LinkedList<Interaction>(); //To store the objects we the player could potentially interact with
+        public UIInteractionEventSO uIInteractionEventSO;
 
         public bool HasValue => _potentialInteractions.Count > 0;
 
@@ -52,7 +53,7 @@ namespace Megumin.GameFramework.Interaction
                 currentNode = currentNode.Next;
             }
 
-            RequestUpdateUI(_potentialInteractions.Count > 0);
+            RequestUpdateUI(HasValue);
         }
 
         private void AddPotentialInteraction(GameObject obj, IInteractionElement element = null)
@@ -72,6 +73,7 @@ namespace Megumin.GameFramework.Interaction
         private void RequestUpdateUI(bool visible)
         {
             //todo
+            uIInteractionEventSO.RaiseEvent(visible, _potentialInteractions.First);
         }
     }
 }

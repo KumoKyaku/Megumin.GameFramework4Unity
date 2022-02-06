@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Megumin.GameFramework
+namespace Megumin.GameFramework.Interaction
 {
     public class UIInteraction : MonoBehaviour
     {

@@ -14,7 +14,9 @@ namespace Megumin.GameFramework.Interaction
             public IInteractionElement Compment;
         }
 
-        private LinkedList<Interaction> _potentialInteractions = new LinkedList<Interaction>(); //To store the objects we the player could potentially interact with
+        public LinkedList<Interaction> _potentialInteractions = new LinkedList<Interaction>(); //To store the objects we the player could potentially interact with
+
+        public bool HasValue => _potentialInteractions.Count > 0;
 
         /// <summary>
         /// Called by the Event on the trigger collider on the child GO called "InteractionZone"

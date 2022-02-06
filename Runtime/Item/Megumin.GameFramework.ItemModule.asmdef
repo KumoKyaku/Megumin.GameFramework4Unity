@@ -2,7 +2,8 @@
     "name": "Megumin.GameFramework.ItemModule",
     "rootNamespace": "Megumin.GameFramework.Item",
     "references": [
-        "GUID:a7ea6e0cfdff706448b2f39196561187"
+        "GUID:a7ea6e0cfdff706448b2f39196561187",
+        "GUID:dfb0db5c949e20746befeff7a094fa1c"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

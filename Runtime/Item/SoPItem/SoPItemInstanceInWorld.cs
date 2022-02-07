@@ -4,14 +4,14 @@ using UnityEngine;
 using Megumin.GameFramework;
 using Megumin.GameFramework.Interaction;
 
-namespace Megumin.GameFramework.Item.BD
+namespace Megumin.GameFramework.Item.SoP  
 {
-    public class BDItemInstanceInWorld : ItemInstanceInWorld, 
+    public class SoPItemInstanceInWorld : ItemInstanceInWorld, 
         IInteractionElement
     {
         public bool CreateInstance = false;
-        public BDItemFactory BDItemFactory;
-        public BDItem BDItem;
+        public SoPItemFactory BDItemFactory;
+        public SoPItem BDItem;
 
         private void Awake()
         {
@@ -40,11 +40,6 @@ namespace Megumin.GameFramework.Item.BD
             //{
             //    ItemConfigSO.Icon.GizmoDraw(transform.position);
             //}
-        }
-
-        public void OnF1(object option = null)
-        {
-            LogItem();
         }
     }
 }

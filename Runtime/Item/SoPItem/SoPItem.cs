@@ -4,13 +4,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Megumin.GameFramework.Item.BD
+namespace Megumin.GameFramework.Item.SoP  
 {
     /// <summary>
     /// 用于任务物品显示
     /// <para>不是配置，因为可以指示数量；也不是真实物品</para>
     /// </summary>
-    public partial class BDItemBase<CFG> : Item<CFG>
+    public partial class SoPItemBase<CFG> : Item<CFG>
         where CFG : IName, IFriendlyName, IDescribable
     {
         public string Name => Config.Name;
@@ -20,9 +20,9 @@ namespace Megumin.GameFramework.Item.BD
         public string Description => Config.Description;
     }
 
-    public class BDItem : BDItemBase<ItemConfigSO>
+    public class SoPItem : SoPItemBase<ItemConfigSO>
     {
-        public BDItem(ItemConfigSO itemConfigSO, Guid guid)
+        public SoPItem(ItemConfigSO itemConfigSO, Guid guid)
         {
             Config = itemConfigSO;
             GUID = guid;

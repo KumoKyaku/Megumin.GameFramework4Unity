@@ -145,3 +145,4 @@ MonoBehaviour:
   ItemConfigSO: {fileID: 11400000, guid: 2258133ac7609dd4ebc63600cebad63d, type: 2}
   ModelRoot: {fileID: 2238747399621400438}
   CreateInstance: 1
+  BDItemFactory: {fileID: 11400000, guid: 7ddb1ae32977e7048b3b00fa231419b1, type: 2}

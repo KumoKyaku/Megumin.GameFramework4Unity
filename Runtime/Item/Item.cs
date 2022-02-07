@@ -17,42 +17,21 @@ namespace Megumin.GameFramework.Item
     //Q: 最大堆叠数是背包的属性还是物品属性?
     //A: 应该还是物品属性. 因为实例ID的关系, 如果超过最大堆叠,应该有2个实例ID.
 
-
-    /// <summary>
-    /// 约束集合
-    /// </summary>
-    public interface IMeguminItemConfig : IName, IFriendlyName, IDescribable, IIcon
-    {
-
-    }
-
-    /// <summary>
-    /// 约束集合
-    /// </summary>
-    public interface IMeguminItem : IMeguminItemConfig
-    {
-
-    }
+    //物品  实例的和非实例的.
+    //虚的和非虚的. 是不是虚物品和实例性无关.
 
     public partial class Item 
     {
-
+        public bool IsVisual { get; protected set; }  
     }
 
     /// <summary>
     /// 用于任务物品显示
     /// <para>不是配置，因为可以指示数量；也不是真实物品</para>
     /// </summary>
-    public partial class Item<CFG> : Item, IMeguminItem
-        where CFG : IMeguminItemConfig
+    public partial class Item<CFG> : Item
     {
         public CFG Config { get; protected set; }
-
-        public string Name => Config.Name;
-
-        public string FriendlyName => Config.FriendlyName;
-
-        public string Description => Config.Description;
     }
 
 }

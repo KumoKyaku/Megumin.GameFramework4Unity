@@ -11,7 +11,6 @@ namespace Megumin.GameFramework.Item
 
     public class ItemInstanceInWorld : MonoBehaviour, IItemInstance
     {
-        public ItemConfigSO ItemConfigSO;
         public GameObject ModelRoot;
     }
 }

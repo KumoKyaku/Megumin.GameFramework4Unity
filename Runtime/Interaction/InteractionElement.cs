@@ -11,5 +11,7 @@ namespace Megumin.GameFramework.Interaction
         {
         
         }
+
+        public object InteractionObject { get; }
     }
 }

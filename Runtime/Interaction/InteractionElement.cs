@@ -13,5 +13,15 @@ namespace Megumin.GameFramework.Interaction
         }
 
         public object InteractionObject { get; }
+
+        public void PreInteract()
+        {
+            
+        }
+
+        public void PostInteract<T>(T result = default)
+        {
+            
+        }
     }
 }

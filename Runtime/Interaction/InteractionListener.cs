@@ -40,6 +40,30 @@ namespace Megumin.GameFramework.Interaction
                 RemovePotentialInteraction(obj);
         }
 
+        public void Update()
+        {
+            using (ListPool<Interaction>.Rent(out var list))
+            {
+                //手动检测对象是否被销毁.
+                foreach (var item in _potentialInteractions)
+                {
+                    if (item.interactableObject)
+                    {
+
+                    }
+                    else
+                    {
+                        list.Add(item);
+                    }
+                }
+
+                foreach (var item in list)
+                {
+                    RemoveInteraction(item);
+                }
+            }
+        }
+
         private void RemovePotentialInteraction(GameObject obj)
         {
             LinkedListNode<Interaction> currentNode = _potentialInteractions.First;
@@ -53,6 +77,12 @@ namespace Megumin.GameFramework.Interaction
                 currentNode = currentNode.Next;
             }
 
+            RequestUpdateUI(HasValue);
+        }
+
+        private void RemoveInteraction(Interaction node)
+        {
+            _potentialInteractions.Remove(node);
             RequestUpdateUI(HasValue);
         }
 

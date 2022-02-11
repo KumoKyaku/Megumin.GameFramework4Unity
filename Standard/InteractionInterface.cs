@@ -1,20 +1,23 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Megumin.GameFramework.Interaction
 {
     /// <summary>
-    /// View²ã
+    /// Viewå±‚
     /// </summary>
     public interface IInteractionElement
     {
         object InteractionObject { get; }
+        void PreInteract();
+        void PostInteract<T>(T result = default);
     }
 
     /// <summary>
-    /// ½»»¥¶ÔÏóData
+    /// äº¤äº’å¯¹è±¡Data è®¾è®¡æœ‰è¯¯
     /// </summary>
+    [System.Obsolete]
     public interface IInteractionObject
     {
         void Interact(object sender,object option = default);

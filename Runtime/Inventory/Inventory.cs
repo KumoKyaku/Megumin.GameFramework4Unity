@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Threading.Tasks;
 
 namespace Megumin.GameFramework.Inventory
 {
@@ -28,7 +29,23 @@ namespace Megumin.GameFramework.Inventory
     public class Inventory<T> : Inventory
         where T : IInventoryElement
     {
+        public List<T> Items = new List<T>();
+        public HashSet<T> ItemHashSet = new HashSet<T>();
 
+        /// <summary>
+        /// 可能需要网络验证
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public virtual Task<int> AddNewItem(T item)
+        {
+            if (ItemHashSet.Add(item))
+            {
+                Items.Add(item);
+            }
+
+            return Task.FromResult(0);
+        }
     }
 
     /// <summary>

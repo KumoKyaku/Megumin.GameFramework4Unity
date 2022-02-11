@@ -20,17 +20,15 @@ namespace Megumin.GameFramework.Interaction
         public bool AlsoFindParentElement = false;
         public UnityEvent<bool, GameObject, IInteractionElement> OnElementTrigger = default;
 
+        //public HashSet<Collider> InZone = new HashSet<Collider>();
         private void OnTriggerEnter(Collider other)
         {
-            if ((1 << other.gameObject.layer & MaskLayer) != 0)
-            {
-
-            }
-            else
+            if (!CheckMask(other))
             {
                 return;
             }
 
+            //InZone.Add(other);
             if (GameObjectTrigger)
             {
                 OnGameObjectTrigger?.Invoke(true, other.gameObject);
@@ -55,17 +53,55 @@ namespace Megumin.GameFramework.Interaction
             }
         }
 
-        private void OnTriggerExit(Collider other)
+        public bool CheckMask(Collider other)
         {
             if ((1 << other.gameObject.layer & MaskLayer) != 0)
             {
-
+                return true;
             }
             else
+            {
+                return false;
+            }
+        }
+
+        //public void Update()
+        //{
+        //    using(ListPool<Collider>.Rent(out var list))
+        //    {
+        //        //碰撞盒销毁不会除非Exit,手动检测是否被销毁.
+        //        //other.gameObject 已经销毁,无法实现.改为在listener中处理.
+        //        foreach (var item in InZone)
+        //        {
+        //            if (item)
+        //            {
+
+        //            }
+        //            else
+        //            {
+        //                list.Add(item);
+        //            }
+        //        }
+
+        //        foreach (var item in list)
+        //        {
+        //            OnTriggerExit(item);
+        //        }
+        //    }
+        //}
+
+        /// <summary>
+        /// 碰撞盒销毁不会除非Exit
+        /// </summary>
+        /// <param name="other"></param>
+        private void OnTriggerExit(Collider other)
+        {
+            if (!CheckMask(other))
             {
                 return;
             }
 
+            //InZone.Remove(other);
             if (GameObjectTrigger)
             {
                 OnGameObjectTrigger?.Invoke(false, other.gameObject);

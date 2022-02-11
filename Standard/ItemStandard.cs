@@ -10,11 +10,26 @@ namespace Megumin.GameFramework.Standard
     public interface IStackable
     {
         int MaxStackCount { get; }
+        int StackCount { get; }
     }
 
-    public interface IName
+    public interface INameable
     {
         string Name { get; }
+        public string GetName<T>(T option = default)
+        {
+            return Name;
+        }
+    }
+
+    public interface IDisplayNameable
+    {
+        string DisplayName { get; }
+    }
+
+    public interface IIndexable<out T>
+    {
+        T Index { get; }
     }
 
     public interface IFriendlyName

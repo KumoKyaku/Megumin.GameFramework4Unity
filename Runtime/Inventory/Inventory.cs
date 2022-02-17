@@ -31,13 +31,12 @@ namespace Megumin.GameFramework.Inventory
     {
         public List<T> Items = new List<T>();
         public HashSet<T> ItemHashSet = new HashSet<T>();
-
         /// <summary>
         /// 可能需要网络验证
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        public virtual Task<int> AddNewItem(T item)
+        public virtual Task<int> AddNewItem(T item,bool autoMerge = true)
         {
             if (ItemHashSet.Add(item))
             {
@@ -46,15 +45,12 @@ namespace Megumin.GameFramework.Inventory
 
             return Task.FromResult(0);
         }
+
+        public virtual bool IsIn(T item)
+        {
+            return false;
+        }
     }
 
-    /// <summary>
-    /// 保存器接口,可以是网络保存器,也可以是本地保存器
-    /// <para>一些操作如拆分,需要保存器确认</para>
-    /// 也应该可以通过保存器填充背包,刷新背包
-    /// </summary>
-    public interface ISaver
-    {
-
-    }
+    
 }

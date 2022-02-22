@@ -4,6 +4,17 @@ using UnityEngine;
 
 namespace Megumin.GameFramework.Standard
 {
+
+    public interface IGrayable
+    {
+        bool IsGray { get; }
+
+        public bool GetGrayState<T>(T option = default)
+        {
+            return IsGray;
+        }
+    }
+
     /// <summary>
     /// 可堆叠的
     /// </summary>

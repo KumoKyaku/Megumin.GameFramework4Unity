@@ -22,7 +22,7 @@ namespace Megumin.GameFramework.Item
 
     public partial class Item 
     {
-        public bool IsVisual { get; protected set; }  
+        public bool IsVisual { get; set; }  
     }
 
     /// <summary>

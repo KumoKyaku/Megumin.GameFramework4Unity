@@ -3,17 +3,26 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using Megumin;
 
 namespace Megumin.GameFramework.Numerical
 {
     public enum NumericalType
     {
         HP,
+        攻击力,
+        防御力,
+        智力,
+        力量,
+        敏捷,
+        精神,
+
         冲击力,
         黄色护盾,
         蓝色护盾,
         仇恨,
         躯干,
+        猥亵值,
     }
 
     [Serializable]
@@ -29,10 +38,73 @@ namespace Megumin.GameFramework.Numerical
         }
     }
 
+    [Serializable]
     public class PropertyChange
     {
-        public NumericalType Type { get; set; }
-        public int ChangeValue { get; set; }
+        public NumericalType Type;
+        /// <summary>
+        /// 常数项
+        /// </summary>
+        public int ConstValue = 0;
+        /// <summary>
+        /// 最大值系数
+        /// </summary>
+        public float MaxValueFactor = 0;
+
+        /// <summary>
+        /// 受其他属性影响的系数,比如额外恢复防御力5%的血量
+        /// </summary>
+        [Serializable]
+        public class PropertyFactor
+        {
+            public NumericalType Type;
+            public float Factor = 0f;
+        }
+
+        [SerializeField]
+        private List<PropertyFactor> OtherFactor = new List<PropertyFactor>();
+
+        [Space]
+        [ProtectedInInspector]
+        public float GlobalFactor = 1;
+
+        public PropertyChange Clone()
+        {
+            return this.MemberwiseClone() as PropertyChange;
+        }
+
+        public int FinalChangeValue { get; protected set; }
+
+        /// <summary>
+        /// 计算各个因子影响后的结果,如果以后有需要，可以创建公式SO文件来定义不同公式。
+        /// </summary>
+        /// <param name="currentProp"></param>
+        public void CalFinalChangeValue(Dictionary<NumericalType, NumericalProperty> currentProp)
+        {
+            float result = ConstValue;
+
+            if (currentProp != null)
+            {
+                if (currentProp.TryGetValue(Type, out var myProp))
+                {
+                    var mop = MaxValueFactor * myProp.Max;
+                    result += mop;
+                }
+
+                foreach (var item in OtherFactor)
+                {
+                    if (currentProp.TryGetValue(item.Type, out var prop))
+                    {
+                        var op = item.Factor * prop.Current;
+                        result += op;
+                    }
+                }
+            }
+
+            result *= GlobalFactor;
+
+            FinalChangeValue = (int)result;
+        }
     }
 
     public class NumericalObject
@@ -40,14 +112,14 @@ namespace Megumin.GameFramework.Numerical
         public Dictionary<NumericalType, NumericalProperty> NumericalProperty { get; internal set; }
             = new Dictionary<NumericalType, NumericalProperty>();
 
-        public Task<int> ChangePropertyOnFrameline(NumericalType type, int changeValue) => ChangePropertyAsync(type, changeValue);
+        public Task<int> ChangePropertyOnFrameline(PropertyChange change) => ChangePropertyAsync(change);
 
-        Task<int> ChangePropertyAsync(NumericalType type,int changeValue)
+        Task<int> ChangePropertyAsync(PropertyChange propertyChange)
         {
             TaskCompletionSource<int> source = new TaskCompletionSource<int>();
             TodoChange change = new TodoChange();
-            change.Type = type;
-            change.ChangeValue = changeValue;
+            change.Type = propertyChange.Type;
+            change.PropertyChange = propertyChange;
             change.ResultSource = source;
             Todos.Enqueue(change);
             return source.Task;
@@ -57,28 +129,29 @@ namespace Megumin.GameFramework.Numerical
         {
             public TaskCompletionSource<int> ResultSource { get; internal set; }
             public NumericalType Type { get; internal set; }
-            public int ChangeValue { get; internal set; }
+            public PropertyChange PropertyChange { get; internal set; }
         }
 
         Queue<TodoChange> Todos = new Queue<TodoChange>();
         public void ApplyChangeList()
         {
-            while (Todos.TryDequeue(out var change))
+            while (Todos.TryDequeue(out var todo))
             {
-                if (NumericalProperty.TryGetValue(change.Type, out var prop))
+                if (NumericalProperty.TryGetValue(todo.Type, out var prop))
                 {
-                    var newv = prop.Current + change.ChangeValue;
+                    todo.PropertyChange.CalFinalChangeValue(NumericalProperty);
+                    var newv = prop.Current + todo.PropertyChange.FinalChangeValue;
                     newv = Math.Min(newv, prop.Max);
                     prop.Current = newv;
-                    change.ResultSource?.SetResult(0);
+                    todo.ResultSource?.SetResult(0);
                 }
                 else
                 {
-                    change.ResultSource?.SetResult(-1);
+                    todo.ResultSource?.SetResult(-1);
                 }
             }
         }
     }
 
-    
+
 }

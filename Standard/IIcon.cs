@@ -14,8 +14,12 @@ namespace Megumin.GameFramework.Standard
     {
         Sprite Icon { get; }
 
+        //[UnityEngine.Scripting.Preserve]
         public Sprite GetIcon<T>(T option = default)
         {
+#if MEGUMIN_DEBUG_IL2CPP
+            Debug.Log($"IIconable GetIcon T:{typeof(T).Name} {(Icon ? Icon.name : "NullIcon")}");
+#endif
             return Icon;
         }
     }

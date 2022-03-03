@@ -36,7 +36,7 @@ namespace Megumin.GameFramework.Standard
         /// <returns></returns>
         /// <remarks>怀疑错了, 接口 + 泛型 + 接口默认实现方法 + 可选参数 + IL2CPP，都没崩,可以按照预期工作。</remarks>
         //[UnityEngine.Scripting.Preserve]
-        public string GetName<T>(T option = default)
+        public string GetName<T>(T key, object option = default)
         {
 #if MEGUMIN_DEBUG_IL2CPP
             Debug.Log($"INameable GetName T:{typeof(T).Name} {Name}");

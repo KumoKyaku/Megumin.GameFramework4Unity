@@ -10,6 +10,8 @@ namespace Megumin.GameFramework.Numerical
     public enum NumericalType
     {
         HP,
+        MP,
+        SP,
         攻击力,
         防御力,
         智力,
@@ -22,13 +24,13 @@ namespace Megumin.GameFramework.Numerical
         蓝色护盾,
         仇恨,
         躯干,
-        猥亵值,
+        威胁值,
     }
 
     [Serializable]
     public class NumericalProperty
     {
-        public NumericalType Type;
+        public SEnum<NumericalType> Type;
         public int Current;
         public int Max;
 

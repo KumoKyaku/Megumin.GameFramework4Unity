@@ -29,6 +29,9 @@ namespace Megumin.GameFramework
         [field: ProtectedInInspector]
         public long TypeID { get; set; } = 10000000;
 
+        [field: SerializeField]
+        public Sprite Icon { get; set; }
+
         public string Name => name;
     }
 }

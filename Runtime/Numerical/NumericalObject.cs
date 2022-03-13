@@ -25,8 +25,14 @@ namespace Megumin.GameFramework.Numerical
         仇恨,
         躯干,
         威胁值,
+
+        HPMax,
+        MPMax,
+        SPMax,
+        躯干Max,
     }
 
+    [Obsolete("错误设计，HP，和 HPMax 是两个属性，不能写成一个", true)]
     [Serializable]
     public class NumericalProperty
     {
@@ -38,6 +44,83 @@ namespace Megumin.GameFramework.Numerical
         {
             return this.MemberwiseClone() as NumericalProperty;
         }
+    }
+
+    public sealed class ExtraValueIntMultipleValue : IntMultipleValue<object>
+    {
+        //public ExtraValueIntMultipleValue(object key, int v = default)
+        //    :base(key, v)
+        //{
+
+        //}
+
+        public override int RemoveAll()
+        {
+            ElementDic.Clear();
+            //ElementDic[DefaultKey] = DefaultValue;
+            ApplyValue();
+            return Current;
+        }
+    }
+
+    /// <summary>
+    /// 不要序列化这个类
+    /// </summary>
+    public class NumericalProperty2
+    {
+        public NumericalType Type;
+
+        /// <summary>
+        /// 基础数值/白字部分
+        /// </summary>
+        public int BaseValue;
+        public int ExtraValue { get; protected set; }
+
+        /// <summary>
+        /// buff装备增减值
+        /// </summary>
+        public IntMultipleValue<object> MultipleExtraValue;
+
+        public int Value => BaseValue + ExtraValue;
+
+        /// <summary>
+        /// 对应关系直接写死。
+        /// </summary>
+        /// <returns></returns>
+        public NumericalType? GetMaxType()
+        {
+            switch (Type)
+            {
+                case NumericalType.HP:
+                    return NumericalType.HPMax;
+                case NumericalType.MP:
+                    return NumericalType.MPMax;
+                case NumericalType.SP:
+                    return NumericalType.SPMax;
+                case NumericalType.躯干:
+                    return NumericalType.躯干Max;
+                default:
+                    break;
+            }
+            return null;
+        }
+
+        void ExtraChanged(int newValue, int oldValue)
+        {
+            ExtraValue = newValue;
+        }
+
+        public NumericalProperty2()
+        {
+            MultipleExtraValue = new IntMultipleValue<object>();
+            MultipleExtraValue.ValueChanged += ExtraChanged;
+        }
+    }
+
+    public interface INumericalPropertyFinder
+    {
+        //int? Find(NumericalType type);
+        bool TryGetValue(NumericalType type, out NumericalProperty2 value);
     }
 
     [Serializable]
@@ -61,6 +144,9 @@ namespace Megumin.GameFramework.Numerical
         {
             public NumericalType Type;
             public float Factor = 0f;
+            [HelpBox("仅对白字部分生效还是整个值生效。")]
+            //其他属性用白字值，避免循环计算。
+            public bool IsBase = true;
         }
 
         [SerializeField]
@@ -81,23 +167,38 @@ namespace Megumin.GameFramework.Numerical
         /// 计算各个因子影响后的结果,如果以后有需要，可以创建公式SO文件来定义不同公式。
         /// </summary>
         /// <param name="currentProp"></param>
-        public void CalFinalChangeValue(Dictionary<NumericalType, NumericalProperty> currentProp)
+        /// <remarks>各个因子只能对白字生效，否则会循环计算导致数据爆炸</remarks>
+        public void CalFinalChangeValue(INumericalPropertyFinder finder)
         {
             float result = ConstValue;
 
-            if (currentProp != null)
+            if (finder != null)
             {
-                if (currentProp.TryGetValue(Type, out var myProp))
+                if (finder.TryGetValue(Type, out var myProp))
                 {
-                    var mop = MaxValueFactor * myProp.Max;
-                    result += mop;
+                    var maxType = myProp.GetMaxType();
+                    if (maxType.HasValue)
+                    {
+                        if (finder.TryGetValue(maxType.Value, out var maxProp))
+                        {
+                            //最大值用实际值
+                            var mop = MaxValueFactor * maxProp.Value;
+                            result += mop;
+                        }
+                    }
                 }
-
+                
                 foreach (var item in OtherFactor)
                 {
-                    if (currentProp.TryGetValue(item.Type, out var prop))
+                    if (finder.TryGetValue(item.Type, out var prop))
                     {
-                        var op = item.Factor * prop.Current;
+                        var pv = prop.BaseValue;
+                        if (!item.IsBase)
+                        {
+                            pv = prop.Value;
+                        }
+
+                        var op = item.Factor * pv;
                         result += op;
                     }
                 }
@@ -109,10 +210,10 @@ namespace Megumin.GameFramework.Numerical
         }
     }
 
-    public class NumericalObject
+    public class NumericalObject : INumericalPropertyFinder
     {
-        public Dictionary<NumericalType, NumericalProperty> NumericalProperty { get; internal set; }
-            = new Dictionary<NumericalType, NumericalProperty>();
+        public Dictionary<NumericalType, NumericalProperty2> NumericalProperty { get; internal set; }
+            = new Dictionary<NumericalType, NumericalProperty2>();
 
         public Task<int> ChangePropertyOnFrameline(PropertyChange change) => ChangePropertyAsync(change);
 
@@ -141,10 +242,19 @@ namespace Megumin.GameFramework.Numerical
             {
                 if (NumericalProperty.TryGetValue(todo.Type, out var prop))
                 {
-                    todo.PropertyChange.CalFinalChangeValue(NumericalProperty);
-                    var newv = prop.Current + todo.PropertyChange.FinalChangeValue;
-                    newv = Math.Min(newv, prop.Max);
-                    prop.Current = newv;
+                    todo.PropertyChange.CalFinalChangeValue(this);
+                    var newv = prop.BaseValue + todo.PropertyChange.FinalChangeValue;
+                    var maxType = prop.GetMaxType();
+                    if (maxType.HasValue)
+                    {
+                        if (NumericalProperty.TryGetValue(maxType.Value, out var maxProp))
+                        {
+                            //限制最大值。
+                            newv = Math.Min(newv, maxProp.Value);
+                        }
+                    }
+
+                    prop.BaseValue = newv;
                     todo.ResultSource?.SetResult(0);
                 }
                 else
@@ -152,6 +262,11 @@ namespace Megumin.GameFramework.Numerical
                     todo.ResultSource?.SetResult(-1);
                 }
             }
+        }
+
+        public bool TryGetValue(NumericalType type, out NumericalProperty2 value)
+        {
+            return NumericalProperty.TryGetValue(type, out value);
         }
     }
 

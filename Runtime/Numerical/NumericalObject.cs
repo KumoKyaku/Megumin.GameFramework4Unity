@@ -107,7 +107,9 @@ namespace Megumin.GameFramework.Numerical
 
         void ExtraChanged(int newValue, int oldValue)
         {
+            var old = Value;
             ExtraValue = newValue;
+            ValueChange?.Invoke(Value, old);
         }
 
         public NumericalProperty2()
@@ -115,6 +117,8 @@ namespace Megumin.GameFramework.Numerical
             MultipleExtraValue = new IntMultipleValue<object>();
             MultipleExtraValue.ValueChanged += ExtraChanged;
         }
+
+        public event Megumin.OnValueChanged<int> ValueChange;
     }
 
     public interface INumericalPropertyFinder
@@ -124,89 +128,95 @@ namespace Megumin.GameFramework.Numerical
     }
 
     [Serializable]
-    public class PropertyChange
+    public class PropertyChange : ISerializationCallbackReceiver
     {
-        public NumericalType Type;
+        [HideInInspector]
+        public string ElementName;
+
+        [UnityEngine.Serialization.FormerlySerializedAs("Type")]
+        public NumericalType TargetType;
         /// <summary>
         /// 常数项
         /// </summary>
         public int ConstValue = 0;
-        /// <summary>
-        /// 最大值系数
-        /// </summary>
-        public float MaxValueFactor = 0;
+        
+        [HelpBox("在所有因子计算完毕后应用这个因子,默认值为 1")]
+        [ProtectedInInspector]
+        public float GlobalFactor = 1;
 
         /// <summary>
         /// 受其他属性影响的系数,比如额外恢复防御力5%的血量
         /// </summary>
         [Serializable]
-        public class PropertyFactor
+        public class PropertyFactor:ISerializationCallbackReceiver
         {
-            public NumericalType Type;
+            [HideInInspector]
+            public string ElementName;
+
+            [UnityEngine.Serialization.FormerlySerializedAs("Type")]
+            public NumericalType FactorType;
+            public float BaseFactor = 0f;
+            public float ExtraFactor = 0f;
             public float Factor = 0f;
-            [HelpBox("仅对白字部分生效还是整个值生效。")]
-            //其他属性用白字值，避免循环计算。
-            public bool IsBase = true;
+
+            public void OnBeforeSerialize()
+            {
+                ElementName = FactorType.ToString();
+            }
+
+            public void OnAfterDeserialize()
+            {
+                
+            }
         }
 
-        [SerializeField]
-        private List<PropertyFactor> OtherFactor = new List<PropertyFactor>();
-
         [Space]
-        [ProtectedInInspector]
-        public float GlobalFactor = 1;
+        [SerializeField]
+        private List<PropertyFactor> Factor = new List<PropertyFactor>();
 
         public PropertyChange Clone()
         {
             return this.MemberwiseClone() as PropertyChange;
         }
 
-        public int FinalChangeValue { get; protected set; }
+        public int LastCalValue { get; protected set; }
 
         /// <summary>
         /// 计算各个因子影响后的结果,如果以后有需要，可以创建公式SO文件来定义不同公式。
         /// </summary>
         /// <param name="currentProp"></param>
         /// <remarks>各个因子只能对白字生效，否则会循环计算导致数据爆炸</remarks>
-        public void CalFinalChangeValue(INumericalPropertyFinder finder)
+        public int CalFinalChangeValue(INumericalPropertyFinder finder)
         {
             float result = ConstValue;
 
             if (finder != null)
             {
-                if (finder.TryGetValue(Type, out var myProp))
+                foreach (var item in Factor)
                 {
-                    var maxType = myProp.GetMaxType();
-                    if (maxType.HasValue)
+                    if (finder.TryGetValue(item.FactorType, out var prop))
                     {
-                        if (finder.TryGetValue(maxType.Value, out var maxProp))
-                        {
-                            //最大值用实际值
-                            var mop = MaxValueFactor * maxProp.Value;
-                            result += mop;
-                        }
-                    }
-                }
-                
-                foreach (var item in OtherFactor)
-                {
-                    if (finder.TryGetValue(item.Type, out var prop))
-                    {
-                        var pv = prop.BaseValue;
-                        if (!item.IsBase)
-                        {
-                            pv = prop.Value;
-                        }
-
-                        var op = item.Factor * pv;
-                        result += op;
+                        result += prop.BaseValue * item.BaseFactor;
+                        result += prop.ExtraValue * item.ExtraFactor;
+                        result += prop.Value * item.Factor;
                     }
                 }
             }
 
             result *= GlobalFactor;
 
-            FinalChangeValue = (int)result;
+            LastCalValue = (int)result;
+            return LastCalValue;
+        }
+
+        public void OnBeforeSerialize()
+        {
+            ElementName = TargetType.ToString();
+        }
+
+        public void OnAfterDeserialize()
+        {
+            
         }
     }
 
@@ -221,7 +231,7 @@ namespace Megumin.GameFramework.Numerical
         {
             TaskCompletionSource<int> source = new TaskCompletionSource<int>();
             TodoChange change = new TodoChange();
-            change.Type = propertyChange.Type;
+            change.Type = propertyChange.TargetType;
             change.PropertyChange = propertyChange;
             change.ResultSource = source;
             Todos.Enqueue(change);
@@ -243,7 +253,7 @@ namespace Megumin.GameFramework.Numerical
                 if (NumericalProperty.TryGetValue(todo.Type, out var prop))
                 {
                     todo.PropertyChange.CalFinalChangeValue(this);
-                    var newv = prop.BaseValue + todo.PropertyChange.FinalChangeValue;
+                    var newv = prop.BaseValue + todo.PropertyChange.LastCalValue;
                     var maxType = prop.GetMaxType();
                     if (maxType.HasValue)
                     {
@@ -267,6 +277,21 @@ namespace Megumin.GameFramework.Numerical
         public bool TryGetValue(NumericalType type, out NumericalProperty2 value)
         {
             return NumericalProperty.TryGetValue(type, out value);
+        }
+
+        public NumericalProperty2 GetAutoAdd(NumericalType type)
+        {
+            if (NumericalProperty.TryGetValue(type, out var value))
+            {
+                return value;
+            }
+            else
+            {
+                value = new NumericalProperty2();
+                value.Type = type;
+                NumericalProperty.Add(type, value);
+            }
+            return value;
         }
     }
 

@@ -6,11 +6,6 @@ using UnityEngine;
 
 namespace Megumin.GameFramework.Numerical
 {
-    public interface ITimelimitedNumericalTimer
-    {
-        ValueTask Wait(float duration);
-    }
-
     public class TempProp : IConsumable
     {
         public int ConsumableCount { get; set; }
@@ -137,7 +132,7 @@ namespace Megumin.GameFramework.Numerical
             Push(count, duration, p);
         }
 
-        public abstract ITimelimitedNumericalTimer Timer { get; }
+        public abstract ITimer Timer { get; }
 
         protected async void Push(int count, float duration, P p)
         {

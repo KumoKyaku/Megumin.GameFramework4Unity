@@ -13,14 +13,14 @@ namespace Megumin.GameFramework.Numerical
         {
             if (ConsumableCount >= count)
             {
-                ConsumableCount -= count;
                 used = count;
+                ConsumableCount -= count;
                 return true;
             }
             else
             {
-                ConsumableCount = 0;
                 used = ConsumableCount;
+                ConsumableCount = 0;
                 return false;
             }
         }
@@ -51,10 +51,13 @@ namespace Megumin.GameFramework.Numerical
 
         public virtual void Remove(IConsumable propInstance)
         {
-            List.Remove(propInstance);
+            var success = List.Remove(propInstance);
             //Cal();
             Current -= propInstance.ConsumableCount;
-            Debug.Log($"失去临时数值 {Type}  减少{propInstance.ConsumableCount} ，现有 {Current}");
+            if (success)
+            {
+                Debug.Log($"失去临时数值 {Type}  减少{propInstance.ConsumableCount} ，现有 {Current}");
+            }
         }
 
         //public virtual Span<IConsumable> GetSortedUseTarget()
@@ -66,16 +69,17 @@ namespace Megumin.GameFramework.Numerical
         {
             if (Current >= count)
             {
+                var targetCount = count;
                 //TODO,排序。
                 foreach (var item in List)
                 {
-                    if (item.Use(count, out int used))
+                    if (item.Use(targetCount, out int used))
                     {
                         break;
                     }
                     else
                     {
-                        count -= used;
+                        targetCount -= used;
                     }
                 }
 
@@ -102,6 +106,15 @@ namespace Megumin.GameFramework.Numerical
         public Dictionary<T, P> lifePorpDic { get; } = new Dictionary<T, P>();
 
         public bool TryGet(T type, out P p) => lifePorpDic.TryGetValue(type, out p);
+
+        public bool TryUse(T type, int count)
+        {
+            if (lifePorpDic.TryGetValue(type, out var p))
+            {
+                return p.TryUse(count);
+            }
+            return false;
+        }
 
         public P GetAutoAdd(T type)
         {

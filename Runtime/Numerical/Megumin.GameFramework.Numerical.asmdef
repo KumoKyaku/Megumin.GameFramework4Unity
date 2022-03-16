@@ -1,0 +1,18 @@
+{
+    "name": "Megumin.GameFramework.Numerical",
+    "rootNamespace": "Megumin.GameFramework.Numerical",
+    "references": [
+        "GUID:dfb0db5c949e20746befeff7a094fa1c",
+        "GUID:a398bcfaafa9a524eb846a01f4762038",
+        "GUID:a7ea6e0cfdff706448b2f39196561187"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,6 +1,6 @@
 {
     "name": "Megumin.GameFramework.Standard",
-    "rootNamespace": "",
+    "rootNamespace": "Megumin.GameFramework",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],

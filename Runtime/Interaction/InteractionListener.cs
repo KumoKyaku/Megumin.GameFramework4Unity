@@ -80,13 +80,13 @@ namespace Megumin.GameFramework.Interaction
             RequestUpdateUI(HasValue);
         }
 
-        private void RemoveInteraction(Interaction node)
+        public virtual void RemoveInteraction(Interaction node)
         {
             _potentialInteractions.Remove(node);
             RequestUpdateUI(HasValue);
         }
 
-        private void AddPotentialInteraction(GameObject obj, IInteractionElement element = null)
+        public virtual void AddPotentialInteraction(GameObject obj, IInteractionElement element = null)
         {
             Interaction newPotentialInteraction = new Interaction();
             newPotentialInteraction.interactableObject = obj;

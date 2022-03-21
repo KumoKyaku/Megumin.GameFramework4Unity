@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -6,7 +6,7 @@ using UnityEngine.Events;
 namespace Megumin.GameFramework.Interaction
 {
     /// <summary>
-    /// ½»»¥´¥·¢ÇøÓò
+    /// äº¤äº’è§¦å‘åŒºåŸŸ
     /// </summary>
     public class InteractionZone : MonoBehaviour
     {
@@ -21,6 +21,21 @@ namespace Megumin.GameFramework.Interaction
         public UnityEvent<bool, GameObject, IInteractionElement> OnElementTrigger = default;
 
         //public HashSet<Collider> InZone = new HashSet<Collider>();
+
+        [ReadOnlyInInspector]
+        public List<Collider> Colliders;
+        private void Awake()
+        {
+            gameObject.GetComponentsInChildren<Collider>(Colliders);
+            foreach (var item in Colliders)
+            {
+                if (!item.isTrigger)
+                {
+                    Debug.LogWarning($"ç¢°æ’å’Œåº”è¯¥æ˜¯triggerï¼Œ{item.name}");
+                }
+            }
+        }
+
         private void OnTriggerEnter(Collider other)
         {
             if (!CheckMask(other))
@@ -69,8 +84,8 @@ namespace Megumin.GameFramework.Interaction
         //{
         //    using(ListPool<Collider>.Rent(out var list))
         //    {
-        //        //Åö×²ºĞÏú»Ù²»»á³ı·ÇExit,ÊÖ¶¯¼ì²âÊÇ·ñ±»Ïú»Ù.
-        //        //other.gameObject ÒÑ¾­Ïú»Ù,ÎŞ·¨ÊµÏÖ.¸ÄÎªÔÚlistenerÖĞ´¦Àí.
+        //        //ç¢°æ’ç›’é”€æ¯ä¸ä¼šé™¤éExit,æ‰‹åŠ¨æ£€æµ‹æ˜¯å¦è¢«é”€æ¯.
+        //        //other.gameObject å·²ç»é”€æ¯,æ— æ³•å®ç°.æ”¹ä¸ºåœ¨listenerä¸­å¤„ç†.
         //        foreach (var item in InZone)
         //        {
         //            if (item)
@@ -91,7 +106,7 @@ namespace Megumin.GameFramework.Interaction
         //}
 
         /// <summary>
-        /// Åö×²ºĞÏú»Ù²»»á³ı·ÇExit
+        /// ç¢°æ’ç›’é”€æ¯ä¸ä¼šé™¤éExit
         /// </summary>
         /// <param name="other"></param>
         private void OnTriggerExit(Collider other)

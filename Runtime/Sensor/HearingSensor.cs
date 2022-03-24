@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
@@ -14,22 +14,22 @@ namespace Megumin.GameFramework.Sensor
         public float Radius = 7.5f;
 
         /// <summary>
-        /// Ã¿´ÎÔö¼ÓÄ¿±êÌı¾õÖµ
+        /// æ¯æ¬¡å¢åŠ ç›®æ ‡å¬è§‰å€¼
         /// </summary>
         [Range(0, 50)]  
         public int AddValueInRange = 10;
         /// <summary>
-        ///Ã¿´Î¼õÉÙÄ¿±êÌı¾õÖµ
+        ///æ¯æ¬¡å‡å°‘ç›®æ ‡å¬è§‰å€¼
         /// </summary>
         [Range(0, 50)]
         public int RemoveValueOutRange = 10;
         /// <summary>
-        /// ´¥·¢±»Ìı¼ûµÄãĞÖµ
+        /// è§¦å‘è¢«å¬è§çš„é˜ˆå€¼
         /// </summary>
         [Range(0, 100)]
         public int TriggerValue = 50;
         /// <summary>
-        /// ×î´óÀÛ¼ÆÌı¾õÖµ£¬Õâ¸öÖµÊÇÎªÁËÍÑÀë·¶Î§ÄÜºÜ¿ìÏûÍË±»¸ĞÖª
+        /// æœ€å¤§ç´¯è®¡å¬è§‰å€¼ï¼Œè¿™ä¸ªå€¼æ˜¯ä¸ºäº†è„±ç¦»èŒƒå›´èƒ½å¾ˆå¿«æ¶ˆé€€è¢«æ„ŸçŸ¥
         /// </summary>
         [Range(0, 100)]
         public int MaxSumValue = 100;
@@ -54,7 +54,7 @@ namespace Megumin.GameFramework.Sensor
             using var _handle = ListPool<Component>.Rent(out var list);
             list.AddRange(hearingdelta.Keys);
 
-            //Ã¿´Î¸üĞÂ¼õÉÙ10µãÌı¾õÖµ£¬Ğ¡ÓÚ0¾ÍÒÆ³ı
+            //æ¯æ¬¡æ›´æ–°å‡å°‘10ç‚¹å¬è§‰å€¼ï¼Œå°äº0å°±ç§»é™¤
             foreach (var item in list)
             {
                 var v = hearingdelta[item];
@@ -68,7 +68,7 @@ namespace Megumin.GameFramework.Sensor
                     }
                     else
                     {
-                        //Ã¿´ÎÔÚ·¶Î§ÄÚ¾ÍÔö¼ÓÌı¾õÖµ
+                        //æ¯æ¬¡åœ¨èŒƒå›´å†…å°±å¢åŠ å¬è§‰å€¼
                         v += AddValueInRange * checkDelta;
                     }
                     
@@ -106,7 +106,7 @@ namespace Megumin.GameFramework.Sensor
                 hearingdelta[target] = current;
             }
 
-            //ÔÚÊÓÌı¾õÎ§ÄÚ
+            //åœ¨è§†å¬è§‰å›´å†…
             return current >= TriggerValue;
         }
 
@@ -134,7 +134,7 @@ namespace Megumin.GameFramework.Sensor
                 return;
             }
 
-            //»æÖÆÌı¾õ°ë¾¶
+            //ç»˜åˆ¶å¬è§‰åŠå¾„
             Gizmos.color = DebugColor;
             if (DebugSolid)
             {

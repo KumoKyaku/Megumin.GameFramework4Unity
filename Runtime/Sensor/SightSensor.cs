@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -44,12 +44,7 @@ namespace Megumin.GameFramework.Sensor
         {
             return false;
         }
-
-        /// <summary>
-        /// ÔİÊ±Ö»×öÁËË®Æ½²âÊÔ
-        /// </summary>
-        /// <param name="target"></param>
-        /// <returns></returns>
+        
         public bool Check(MonoBehaviour target, Collider item)
         {
             if (!enabled)
@@ -57,7 +52,7 @@ namespace Megumin.GameFramework.Sensor
                 return false;
             }
 
-            //Ò»¸ö¶ÔÏó¿ÉÄÜÓĞ¶à¸öÅö×²ºĞ£¬Ã¿¸öÅö×²ºĞ¶¼Òª¼ì²â
+            //ä¸€ä¸ªå¯¹è±¡å¯èƒ½æœ‰å¤šä¸ªç¢°æ’ç›’ï¼Œæ¯ä¸ªç¢°æ’ç›’éƒ½è¦æ£€æµ‹
             var dis = Vector3.Distance(transform.position, target.transform.position);
             if (dis < Radius)
             {

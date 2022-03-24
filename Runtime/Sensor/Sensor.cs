@@ -10,6 +10,39 @@ namespace Megumin.GameFramework.Sensor
         /// 探测器是不是自己进行物理检测
         /// </summary>
         public bool PhysicsTestRadiusSelf = false;
+        public LayerMask MaskLayer = -1;
+        public List<string> IgnoreTag = new List<string>();
+
+        public virtual List<Collider> PhysicsTest(float mixR)
+        {
+            var res = Physics.OverlapSphere(transform.position, mixR, MaskLayer);
+            List<Collider> colliders = new List<Collider>();
+            foreach (var item in res)
+            {
+                if (CheckTag(item))
+                {
+                    colliders.Add(item);
+                }
+            }
+
+            return colliders;
+        }
+
+        private bool CheckTag(Collider item)
+        {
+            foreach (var ignore in IgnoreTag)
+            {
+                if (item.CompareTag(ignore))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+
+
         /// <summary>
         /// 更新间隔
         /// </summary>

@@ -1,11 +1,11 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Megumin.GameFramework
 {
     /// <summary>
-    /// ±»Ìı¾õ¸ĞÖª¶ÔÏó¿ÉÒÔÉèÖÃ×Ô¼ºµÄÏìÉù£¬ÓÃÓÚÇ±ĞĞ¿¿½ü¹¦ÄÜ¡£
+    /// è¢«å¬è§‰æ„ŸçŸ¥å¯¹è±¡å¯ä»¥è®¾ç½®è‡ªå·±çš„å“å£°ï¼Œç”¨äºæ½œè¡Œé è¿‘åŠŸèƒ½ã€‚
     /// </summary>
     public interface IHearingSensorTarget
     {

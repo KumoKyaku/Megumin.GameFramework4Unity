@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -6,6 +6,10 @@ using UnityEngine;
 
 namespace Megumin.GameFramework.Sensor
 {
+    /// <summary>
+    /// Maskè¿™é‡Œè®¾ç½®äº†ï¼ŒHearingSensorï¼ŒSightSensorå°±ä¸ç”¨è®¾ç½®äº†
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public partial class AISensor<T> : Sensor
         where T : class
     {
@@ -66,14 +70,12 @@ namespace Megumin.GameFramework.Sensor
             nextCheckStamp = Time.time + checkDelta;
 
             var mixR = Mathf.Max(HearingSensor.Radius, SightSensor.Radius);
-
-            var collidersInRadius =
-                Physics.OverlapSphere(transform.position, mixR);
+            var collidersInRadius = PhysicsTest(mixR);
 
             SightTarget.Clear();
             HearingTarget.Clear();
 
-            ///½»»»ÒıÓÃ
+            ///äº¤æ¢å¼•ç”¨
             (InSensor, OldInSensor) = (OldInSensor, InSensor);
 
             InSensor.Clear();
@@ -94,7 +96,7 @@ namespace Megumin.GameFramework.Sensor
                 {
                     if (SightSensor.Check(behaviour, item))
                     {
-                        //ÔÚÊÓ¾õ·¶Î§ÄÚ
+                        //åœ¨è§†è§‰èŒƒå›´å†…
                         SightTarget.Add(tarC);
                         if (!InSensor.Contains(tarC))
                         {
@@ -113,14 +115,14 @@ namespace Megumin.GameFramework.Sensor
                 }
             }
 
-            ///¼ì²âÒÑ¾­ÔÚ¸ĞÖª·¶Î§ÄÚµÄ£¬¿´¿´ÊÇ²»ÊÇÀë¿ª¸ĞÖª·¶Î§
+            ///æ£€æµ‹å·²ç»åœ¨æ„ŸçŸ¥èŒƒå›´å†…çš„ï¼Œçœ‹çœ‹æ˜¯ä¸æ˜¯ç¦»å¼€æ„ŸçŸ¥èŒƒå›´
             foreach (var item in InSensor)
             {
                 if (item is MonoBehaviour behaviour)
                 {
                     if (SightSensor.Check(behaviour, null))
                     {
-                        //ÔÚÊÓ¾õ·¶Î§ÄÚ
+                        //åœ¨è§†è§‰èŒƒå›´å†…
                         SightTarget.Add(item);
                         if (!InSensor.Contains(item))
                         {
@@ -147,7 +149,7 @@ namespace Megumin.GameFramework.Sensor
                 }
                 else
                 {
-                    //Ê§È¥¸ĞÖª
+                    //å¤±å»æ„ŸçŸ¥
                     OnLostTarget(item);
                 }
             }
@@ -160,7 +162,7 @@ namespace Megumin.GameFramework.Sensor
                 }
                 else
                 {
-                    //ĞÂ¸ĞÖª
+                    //æ–°æ„ŸçŸ¥
                     OnFindTarget(item);
                 }
             }
@@ -173,7 +175,7 @@ namespace Megumin.GameFramework.Sensor
 
         public virtual void OnFindTarget(T target)
         {
-            //Debug.Log($"¸ĞÖªÄ£¿é ·¢ÏÖĞÂÄ¿±ê");
+            //Debug.Log($"æ„ŸçŸ¥æ¨¡å— å‘ç°æ–°ç›®æ ‡");
             if (AutoTarget == null)
             {
                 AutoTarget = target;
@@ -182,7 +184,7 @@ namespace Megumin.GameFramework.Sensor
 
         public virtual void OnLostTarget(T target)
         {
-            //Debug.Log($"¸ĞÖªÄ£¿é Ê§È¥Ä¿±ê");
+            //Debug.Log($"æ„ŸçŸ¥æ¨¡å— å¤±å»ç›®æ ‡");
             if (target == AutoTarget)
             {
                 AutoTarget = InSensor.FirstOrDefault();

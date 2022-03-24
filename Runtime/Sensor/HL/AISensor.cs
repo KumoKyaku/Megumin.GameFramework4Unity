@@ -4,14 +4,17 @@ using UnityEngine;
 
 namespace Megumin.GameFramework.Sensor
 {
-    public partial class AISensor : MonoBehaviour
+    public partial class AISensor<T> : MonoBehaviour
     {
         [ProtectedInInspector]
         public HearingSensor HearingSensor;
         [ProtectedInInspector]
         public SightSensor SightSensor;
 
-        [Range(0,5)]
+        [ProtectedInInspector]
+        public List<T> Ignore = new List<T>();
+
+        [Range(0, 5)]
         public float checkDelta = 0.5f;
 
         public void Awake()
@@ -35,16 +38,28 @@ namespace Megumin.GameFramework.Sensor
             {
                 SightSensor = GetComponentInChildren<SightSensor>();
             }
+
+            var self = GetComponentInParent<T>();
+            if (self != null)
+            {
+                if (!Ignore.Contains(self))
+                {
+                    Ignore.Add(self);
+                }
+            }
         }
 
-        public List<SensorTarget> SightTarget = new List<SensorTarget>();
-        public List<SensorTarget> HearingTarget = new List<SensorTarget>();
-        
-        private float nextCheckStamp;
+        [ReadOnlyInInspector]
+        public List<T> SightTarget = new List<T>();
+        [ReadOnlyInInspector]
+        public List<T> HearingTarget = new List<T>();
+        [ReadOnlyInInspector]
+        public HashSet<T> InSensor = new HashSet<T>();
 
+        private float nextCheckStamp;
         private void Update()
         {
-            if (Time.time + checkDelta > nextCheckStamp)
+            if (Time.time < nextCheckStamp)
             {
                 return;
             }
@@ -55,84 +70,104 @@ namespace Megumin.GameFramework.Sensor
             var collidersInRadius =
                 Physics.OverlapSphere(transform.position, mixR);
 
-            //HashSet<SensorTarget> dealed = new HashSet<SensorTarget>();
+            SightTarget.Clear();
+            HearingTarget.Clear();
+
+            HashSet<T> currentIn = new HashSet<T>();
             foreach (var item in collidersInRadius)
             {
-                var tarC = item.GetComponentInParent<SensorTarget>();
-                if (!tarC)
+                var tarC = item.GetComponentInParent<T>();
+                if (tarC == null)
                 {
                     continue;
                 }
 
-                if (SightSensor.Check(tarC.transform))
+                if (Ignore.Contains(tarC))
                 {
-                    //在视觉范围内
-                    SightTarget.Add(tarC);
+                    continue;
                 }
-                else
+
+                if (tarC is MonoBehaviour behaviour)
                 {
-                    if (HearingSensor.Check(tarC.transform))
+                    if (SightSensor.Check(behaviour, item))
+                    {
+                        //在视觉范围内
+                        SightTarget.Add(tarC);
+                        currentIn.Add(tarC);
+                    }
+
+                    if (HearingSensor.Check(behaviour))
                     {
                         HearingTarget.Add(tarC);
+                        currentIn.Add(tarC);
                     }
                 }
             }
+
+            ///检测已经在感知范围内的，看看是不是离开感知范围
+            foreach (var item in InSensor)
+            {
+                if (item is MonoBehaviour behaviour)
+                {
+                    if (SightSensor.Check(behaviour, null))
+                    {
+                        //在视觉范围内
+                        SightTarget.Add(item);
+                        currentIn.Add(item);
+                    }
+
+                    if (HearingSensor.Check(behaviour))
+                    {
+                        HearingTarget.Add(item);
+                        currentIn.Add(item);
+                    }
+                }
+            }
+
+            foreach (var item in InSensor)
+            {
+                if (currentIn.Contains(item))
+                {
+
+                }
+                else
+                {
+                    //失去感知
+                    OnLostTarget(item);
+                }
+            }
+
+            foreach (var item in currentIn)
+            {
+                if (InSensor.Contains(item))
+                {
+
+                }
+                else
+                {
+                    //新感知
+                    OnFindTarget(item);
+                }
+            }
+
+            InSensor.Clear();
+            foreach (var item in currentIn)
+            {
+                InSensor.Add(item);
+            }
         }
 
-        public void OnFindTarget(SensorTarget target)
+        public virtual void OnFindTarget(T target)
         {
             Debug.Log($"感知模块 发现新目标");
         }
 
-        public void OnLostTarget(SensorTarget target)
+        public virtual void OnLostTarget(T target)
         {
             Debug.Log($"感知模块 失去目标");
         }
     }
 }
 
-//#if UNITY_EDITOR
 
-//namespace Megumin.GameFramework.Sensor
-//{
-//    using UnityEditor;
-//    partial class AISensor
-//    {
-//        public Color SightRadiusColor;
-//        public Color HearingRadiusColor;
-//        public bool DrawSphere = false;
-//        private void OnDrawGizmosSelected()
-//        {
-            
-//            if (DrawSphere)
-//            {
-//                //绘制视觉半径
-//                Gizmos.color = SightRadiusColor;
-//                //Gizmos.DrawSphere(transform.position, SightRadius);
-//                var wireColor = Gizmos.color;
-//                wireColor.a = 1;
-//                Gizmos.color = wireColor;
-//                //Gizmos.DrawWireSphere(transform.position, SightRadius);
-
-//                //绘制听觉半径
-//                Gizmos.color = HearingRadiusColor;
-//                Gizmos.DrawSphere(transform.position, HearingRadius);
-//                wireColor = Gizmos.color;
-//                wireColor.a = 1;
-//                Gizmos.color = wireColor;
-//                Gizmos.DrawWireSphere(transform.position, HearingRadius);
-//            }
-
-//            Handles.color = SightRadiusColor;
-//            Handles.DrawSolidArc(transform.position + Vector3.up, transform.up,
-//                transform.forward,
-//                SightAngle/2, SightRadius);
-//            Handles.DrawSolidArc(transform.position + Vector3.up, transform.up * -1,
-//                transform.forward,
-//                SightAngle / 2, SightRadius);
-//        }
-//    }
-//}
-
-//#endif
 

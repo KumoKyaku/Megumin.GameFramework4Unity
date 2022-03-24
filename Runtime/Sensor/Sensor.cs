@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,11 +7,12 @@ namespace Megumin.GameFramework.Sensor
     public class Sensor : MonoBehaviour
     {
         /// <summary>
-        /// Ì½²âÆ÷ÊÇ²»ÊÇ×Ô¼º½øĞĞÎïÀí¼ì²â
+        /// æ¢æµ‹å™¨æ˜¯ä¸æ˜¯è‡ªå·±è¿›è¡Œç‰©ç†æ£€æµ‹
         /// </summary>
         public bool PhysicsTestRadiusSelf = false;
         public LayerMask MaskLayer = -1;
-        public List<string> IgnoreTag = new List<string>();
+
+        public TagMask TagMask = new TagMask();
 
         public virtual List<Collider> PhysicsTest(float mixR)
         {
@@ -19,7 +20,7 @@ namespace Megumin.GameFramework.Sensor
             List<Collider> colliders = new List<Collider>();
             foreach (var item in res)
             {
-                if (CheckTag(item))
+                if (TagMask.Check(item))
                 {
                     colliders.Add(item);
                 }
@@ -28,23 +29,8 @@ namespace Megumin.GameFramework.Sensor
             return colliders;
         }
 
-        private bool CheckTag(Collider item)
-        {
-            foreach (var ignore in IgnoreTag)
-            {
-                if (item.CompareTag(ignore))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-
-
         /// <summary>
-        /// ¸üĞÂ¼ä¸ô
+        /// æ›´æ–°é—´éš”
         /// </summary>
         [Space]
         [Range(0, 5)]
@@ -54,7 +40,7 @@ namespace Megumin.GameFramework.Sensor
 
         static Pref<bool> globalDebugshow;
         /// <summary>
-        /// È«¾ÖÏÔÊ¾¿ª¹Ø
+        /// å…¨å±€æ˜¾ç¤ºå¼€å…³
         /// </summary>
         public static Pref<bool> GlobalDebugShow
         {

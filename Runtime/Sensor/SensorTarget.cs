@@ -4,18 +4,13 @@ using UnityEngine;
 
 namespace Megumin.GameFramework
 {
-    public class SensorTarget : MonoBehaviour
+    /// <summary>
+    /// 被听觉感知对象可以设置自己的响声，用于潜行靠近功能。
+    /// </summary>
+    public interface IHearingSensorTarget
     {
-        // Start is called before the first frame update
-        void Start()
-        {
-        
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-        
-        }
+        float SensorSound { get; }
     }
 }
+
+

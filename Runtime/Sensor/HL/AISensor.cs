@@ -1,10 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using UnityEngine;
 
 namespace Megumin.GameFramework.Sensor
 {
-    public partial class AISensor<T> : MonoBehaviour
+    public partial class AISensor<T> : Sensor
+        where T : class
     {
         [ProtectedInInspector]
         public HearingSensor HearingSensor;
@@ -14,20 +17,17 @@ namespace Megumin.GameFramework.Sensor
         [ProtectedInInspector]
         public List<T> Ignore = new List<T>();
 
-        [Range(0, 5)]
-        public float checkDelta = 0.5f;
-
         public void Awake()
         {
-            FindC();
+            FindComponent();
         }
 
         private void Reset()
         {
-            FindC();
+            FindComponent();
         }
 
-        void FindC()
+        void FindComponent()
         {
             if (!HearingSensor)
             {
@@ -54,9 +54,9 @@ namespace Megumin.GameFramework.Sensor
         [ReadOnlyInInspector]
         public List<T> HearingTarget = new List<T>();
         [ReadOnlyInInspector]
-        public HashSet<T> InSensor = new HashSet<T>();
+        public List<T> InSensor = new List<T>();
+        List<T> OldInSensor = new List<T>();
 
-        private float nextCheckStamp;
         private void Update()
         {
             if (Time.time < nextCheckStamp)
@@ -73,7 +73,10 @@ namespace Megumin.GameFramework.Sensor
             SightTarget.Clear();
             HearingTarget.Clear();
 
-            HashSet<T> currentIn = new HashSet<T>();
+            ///交换引用
+            (InSensor, OldInSensor) = (OldInSensor, InSensor);
+
+            InSensor.Clear();
             foreach (var item in collidersInRadius)
             {
                 var tarC = item.GetComponentInParent<T>();
@@ -93,13 +96,19 @@ namespace Megumin.GameFramework.Sensor
                     {
                         //在视觉范围内
                         SightTarget.Add(tarC);
-                        currentIn.Add(tarC);
+                        if (!InSensor.Contains(tarC))
+                        {
+                            InSensor.Add(tarC);
+                        }
                     }
 
                     if (HearingSensor.Check(behaviour))
                     {
                         HearingTarget.Add(tarC);
-                        currentIn.Add(tarC);
+                        if (!InSensor.Contains(tarC))
+                        {
+                            InSensor.Add(tarC);
+                        }
                     }
                 }
             }
@@ -113,20 +122,26 @@ namespace Megumin.GameFramework.Sensor
                     {
                         //在视觉范围内
                         SightTarget.Add(item);
-                        currentIn.Add(item);
+                        if (!InSensor.Contains(item))
+                        {
+                            InSensor.Add(item);
+                        }
                     }
 
                     if (HearingSensor.Check(behaviour))
                     {
                         HearingTarget.Add(item);
-                        currentIn.Add(item);
+                        if (!InSensor.Contains(item))
+                        {
+                            InSensor.Add(item);
+                        }
                     }
                 }
             }
 
-            foreach (var item in InSensor)
+            foreach (var item in OldInSensor)
             {
-                if (currentIn.Contains(item))
+                if (InSensor.Contains(item))
                 {
 
                 }
@@ -137,9 +152,9 @@ namespace Megumin.GameFramework.Sensor
                 }
             }
 
-            foreach (var item in currentIn)
+            foreach (var item in InSensor)
             {
-                if (InSensor.Contains(item))
+                if (OldInSensor.Contains(item))
                 {
 
                 }
@@ -150,24 +165,56 @@ namespace Megumin.GameFramework.Sensor
                 }
             }
 
-            InSensor.Clear();
-            foreach (var item in currentIn)
-            {
-                InSensor.Add(item);
-            }
+            OldInSensor.Clear();
         }
+
+        [ReadOnlyInInspector]
+        public T AutoTarget;
 
         public virtual void OnFindTarget(T target)
         {
-            Debug.Log($"感知模块 发现新目标");
+            //Debug.Log($"感知模块 发现新目标");
+            if (AutoTarget == null)
+            {
+                AutoTarget = target;
+            }
         }
 
         public virtual void OnLostTarget(T target)
         {
-            Debug.Log($"感知模块 失去目标");
+            //Debug.Log($"感知模块 失去目标");
+            if (target == AutoTarget)
+            {
+                AutoTarget = InSensor.FirstOrDefault();
+            }
         }
+
+        [Header("Debug")]
+        [Space]
+        public bool DebugSolid = false;
+        public Color DebugColor = Color.red;
+        [Range(0, 10)]
+        public float DebugLineThickness = 2;
     }
 }
 
 
+#if UNITY_EDITOR
 
+namespace Megumin.GameFramework.Sensor
+{
+    using UnityEditor;
+    partial class AISensor<T>
+    {
+        public void OnDrawGizmosSelected()
+        {
+            if (AutoTarget is MonoBehaviour behaviour)
+            {
+                Handles.color = DebugColor;
+                Handles.DrawLine(transform.position, behaviour.transform.position, DebugLineThickness);
+            }
+        }
+    }
+}
+
+#endif

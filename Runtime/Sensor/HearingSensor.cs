@@ -14,12 +14,6 @@ namespace Megumin.GameFramework.Sensor
         public float Radius = 7.5f;
 
         /// <summary>
-        /// 更新间隔
-        /// </summary>
-        [Space]
-        [Range(0, 5)]
-        public float checkDelta = 0.5f;
-        /// <summary>
         /// 每次增加目标听觉值
         /// </summary>
         [Range(0, 50)]  
@@ -40,7 +34,6 @@ namespace Megumin.GameFramework.Sensor
         [Range(0, 100)]
         public int MaxSumValue = 100;
 
-        private float nextCheckStamp;
         public void Update()
         {
             if (Time.time < nextCheckStamp)
@@ -49,7 +42,16 @@ namespace Megumin.GameFramework.Sensor
             }
             nextCheckStamp = Time.time + checkDelta;
 
-            using var _handle = ListPool<MonoBehaviour>.Rent(out var list);
+            if (PhysicsTestRadiusSelf)
+            {
+                var collidersInRadius = Physics.OverlapSphere(transform.position, Radius);
+                foreach (var item in collidersInRadius)
+                {
+                    Check(item);
+                }
+            }
+
+            using var _handle = ListPool<Component>.Rent(out var list);
             list.AddRange(hearingdelta.Keys);
 
             //每次更新减少10点听觉值，小于0就移除
@@ -60,8 +62,16 @@ namespace Megumin.GameFramework.Sensor
                 var dis = Vector3.Distance(transform.position, item.transform.position);
                 if (dis < Radius)
                 {
-                    //每次在范围内就增加听觉值
-                    v += AddValueInRange * checkDelta;
+                    if (item is IHearingSensorTarget hearingSensorTarget)
+                    {
+                        v += hearingSensorTarget.SensorSound * checkDelta;
+                    }
+                    else
+                    {
+                        //每次在范围内就增加听觉值
+                        v += AddValueInRange * checkDelta;
+                    }
+                    
                     v = Mathf.Min(v, MaxSumValue);
                 }
                 else
@@ -78,8 +88,8 @@ namespace Megumin.GameFramework.Sensor
             }
         }
 
-        Dictionary<MonoBehaviour, float> hearingdelta = new Dictionary<MonoBehaviour, float>();
-        public bool Check(MonoBehaviour target)
+        Dictionary<Component, float> hearingdelta = new Dictionary<Component, float>();
+        public bool Check(Component target)
         {
             if (!enabled)
             {

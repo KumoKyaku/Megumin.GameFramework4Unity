@@ -19,7 +19,30 @@ namespace Megumin.GameFramework.Sensor
 
         private void Start()
         {
-            
+
+        }
+
+        public void Update()
+        {
+            if (Time.time < nextCheckStamp)
+            {
+                return;
+            }
+            nextCheckStamp = Time.time + checkDelta;
+
+            if (PhysicsTestRadiusSelf)
+            {
+                var collidersInRadius = Physics.OverlapSphere(transform.position, Radius);
+                foreach (var item in collidersInRadius)
+                {
+                    CheckTarget(item);
+                }
+            }
+        }
+
+        public virtual bool CheckTarget(Collider target)
+        {
+            return false;
         }
 
         /// <summary>
@@ -41,12 +64,12 @@ namespace Megumin.GameFramework.Sensor
                 var dir = target.transform.position - transform.position;
                 var hAngle = Vector3.SignedAngle(dir, transform.forward, transform.up);
                 hAngle = Mathf.Abs(hAngle);
-                if (hAngle > HorizontalAngle /2)
+                if (hAngle > HorizontalAngle / 2)
                 {
                     return false;
                 }
 
-                var vAngle = Vector3.SignedAngle(dir,transform.forward, transform.right);
+                var vAngle = Vector3.SignedAngle(dir, transform.forward, transform.right);
                 vAngle = Mathf.Abs(vAngle);
                 if (vAngle > VerticalAngle / 2)
                 {

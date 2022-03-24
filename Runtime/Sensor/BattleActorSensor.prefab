@@ -1,0 +1,106 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &13162109537298785
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 13162109537298786}
+  - component: {fileID: 13162109537298787}
+  - component: {fileID: 13162109537298789}
+  - component: {fileID: 13162109537298788}
+  m_Layer: 11
+  m_Name: BattleActorSensor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &13162109537298786
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 13162109537298785}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.6, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &13162109537298787
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 13162109537298785}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5c05be97c4a6bd4a9d5a495f4c9b984, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PhysicsTestRadiusSelf: 0
+  checkDelta: 0.5
+  HearingSensor: {fileID: 13162109537298789}
+  SightSensor: {fileID: 13162109537298788}
+  Ignore:
+  - {fileID: 0}
+  SightTarget: []
+  HearingTarget: []
+  Self: {fileID: 0}
+  AutoTarget: {fileID: 0}
+  Near: []
+  DebugSolid: 0
+  DebugColor: {r: 1, g: 0, b: 0, a: 1}
+  DebugLineThickness: 2
+--- !u!114 &13162109537298789
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 13162109537298785}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edcb05a25e7411f459200c678f5aa230, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PhysicsTestRadiusSelf: 0
+  checkDelta: 0.5
+  Type: Hearing
+  Radius: 4
+  AddValueInRange: 10
+  RemoveValueOutRange: 10
+  TriggerValue: 50
+  MaxSumValue: 100
+  DebugSolid: 1
+  DebugColor: {r: 1, g: 0.65080965, b: 0, a: 0.28235295}
+  DebugLineThickness: 5
+--- !u!114 &13162109537298788
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 13162109537298785}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24cdd52ae457afd47a6cca0dda721114, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PhysicsTestRadiusSelf: 0
+  checkDelta: 0.5
+  Type: Sight
+  Radius: 5
+  HorizontalAngle: 100
+  VerticalAngle: 160
+  DebugSolid: 1
+  DebugColor: {r: 0.38060263, g: 0.8509804, b: 0.2509804, a: 0.07058824}
+  DebugLineThickness: 2

@@ -12,12 +12,10 @@ namespace Megumin.GameFramework.Sensor
         [Range(0, 30)]
         public float Radius = 15;
         [Range(0, 360)]
-        public float Angle = 90;
-        /// <summary>
-        /// Todo,暂时
-        /// </summary>
-        [Range(0, 180)]
-        public float FOV = 60;
+        public float HorizontalAngle = 120;
+        [Range(0, 360)]
+        public float VerticalAngle = 160;
+
 
         private void Start()
         {
@@ -40,12 +38,22 @@ namespace Megumin.GameFramework.Sensor
             var dis = Vector3.Distance(transform.position, target.transform.position);
             if (dis < Radius)
             {
-                var deltaAngle = Quaternion.Angle(target.transform.rotation, transform.rotation);
-                if (deltaAngle < Angle)
+                var dir = target.transform.position - transform.position;
+                var hAngle = Vector3.SignedAngle(dir, transform.forward, transform.up);
+                hAngle = Mathf.Abs(hAngle);
+                if (hAngle > HorizontalAngle /2)
                 {
-                    //在视觉范围内
-                    return true;
+                    return false;
                 }
+
+                var vAngle = Vector3.SignedAngle(dir,transform.forward, transform.right);
+                vAngle = Mathf.Abs(vAngle);
+                if (vAngle > VerticalAngle / 2)
+                {
+                    return false;
+                }
+
+                return true;
             }
             return false;
         }
@@ -69,35 +77,46 @@ namespace Megumin.GameFramework.Sensor
     {
         private void OnDrawGizmosSelected()
         {
+            if (!enabled || !GlobalDebugShow)
+            {
+                return;
+            }
+
+            DrawArc(transform.up, transform.forward, HorizontalAngle);
+            DrawArc(transform.right, transform.forward, VerticalAngle);
+        }
+
+        public void DrawArc(Vector3 axis, Vector3 forward, float angle)
+        {
             Handles.color = DebugColor;
             if (DebugSolid)
             {
-                Handles.DrawSolidArc(transform.position, transform.up,
-                                transform.forward,
-                                Angle / 2, Radius);
-                Handles.DrawSolidArc(transform.position, transform.up * -1,
-                    transform.forward,
-                    Angle / 2, Radius);
+                Handles.DrawSolidArc(transform.position, axis,
+                                forward,
+                                angle / 2, Radius);
+                Handles.DrawSolidArc(transform.position, axis * -1,
+                    forward,
+                    angle / 2, Radius);
             }
 
             var wireColor = Handles.color;
             wireColor.a = 1;
             Handles.color = wireColor;
 
-            var leftDir = Quaternion.AngleAxis(-Angle / 2, transform.up);
-            var left = leftDir * transform.forward * Radius;
+            var leftDir = Quaternion.AngleAxis(-angle / 2, axis);
+            var left = leftDir * forward * Radius;
             Handles.DrawLine(transform.position, transform.position + left, DebugLineThickness);
 
-            var rightDir = Quaternion.AngleAxis(Angle / 2, transform.up);
-            var right = rightDir * transform.forward * Radius;
+            var rightDir = Quaternion.AngleAxis(angle / 2, axis);
+            var right = rightDir * forward * Radius;
             Handles.DrawLine(transform.position, transform.position + right, DebugLineThickness);
 
-            Handles.DrawWireArc(transform.position, transform.up,
-                transform.forward,
-                Angle / 2, Radius, DebugLineThickness);
-            Handles.DrawWireArc(transform.position, transform.up * -1,
-                transform.forward,
-                Angle / 2, Radius, DebugLineThickness);
+            Handles.DrawWireArc(transform.position, axis,
+                forward,
+                angle / 2, Radius, DebugLineThickness);
+            Handles.DrawWireArc(transform.position, axis * -1,
+                forward,
+                angle / 2, Radius, DebugLineThickness);
         }
     }
 }

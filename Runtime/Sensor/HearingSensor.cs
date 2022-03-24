@@ -119,6 +119,11 @@ namespace Megumin.GameFramework.Sensor
     {
         private void OnDrawGizmosSelected()
         {
+            if (!enabled || !GlobalDebugShow)
+            {
+                return;
+            }
+
             //»æÖÆÌý¾õ°ë¾¶
             Gizmos.color = DebugColor;
             if (DebugSolid)

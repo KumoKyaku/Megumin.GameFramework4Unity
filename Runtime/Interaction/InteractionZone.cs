@@ -10,7 +10,7 @@ namespace Megumin.GameFramework.Interaction
     /// </summary>
     public class InteractionZone : MonoBehaviour
     {
-        public LayerMask MaskLayer = -1;
+        public GameObjectFilter Filter;
 
         [Space]
         public bool GameObjectTrigger = false;
@@ -70,14 +70,7 @@ namespace Megumin.GameFramework.Interaction
 
         public bool CheckMask(Collider other)
         {
-            if ((1 << other.gameObject.layer & MaskLayer) != 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return Filter.Check(other);
         }
 
         //public void Update()

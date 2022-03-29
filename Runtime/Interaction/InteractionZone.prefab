@@ -75,6 +75,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f16c79ccc7b77c429bed9d1e7672350, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Filter:
+    LayerMask:
+      Enabled: 1
+      Value:
+        serializedVersion: 2
+        m_Bits: 131
+    TagMask:
+      Enabled: 0
+      Value:
+        Tags:
+        - Untagged
   MaskLayer:
     serializedVersion: 2
     m_Bits: 131
@@ -83,6 +94,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   ElementTrigger: 1
+  AlsoFindParentElement: 0
   OnElementTrigger:
     m_PersistentCalls:
       m_Calls:
@@ -99,3 +111,4 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  Colliders: []

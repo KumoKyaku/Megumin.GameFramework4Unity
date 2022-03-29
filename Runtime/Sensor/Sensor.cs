@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 namespace Megumin.GameFramework.Sensor
 {
@@ -10,17 +11,24 @@ namespace Megumin.GameFramework.Sensor
         /// 探测器是不是自己进行物理检测
         /// </summary>
         public bool PhysicsTestRadiusSelf = false;
-        public LayerMask MaskLayer = -1;
-
-        public TagMask TagMask = new TagMask();
+        public GameObjectFilter Filter;
 
         public virtual List<Collider> PhysicsTest(float mixR)
         {
-            var res = Physics.OverlapSphere(transform.position, mixR, MaskLayer);
+            Collider[] res = Array.Empty<Collider>();
+            if (Filter.LayerMask.Enabled)
+            {
+                res = Physics.OverlapSphere(transform.position, mixR, Filter.LayerMask.Value);
+            }
+            else
+            {
+                res = Physics.OverlapSphere(transform.position, mixR);
+            }
+
             List<Collider> colliders = new List<Collider>();
             foreach (var item in res)
             {
-                if (TagMask.Check(item))
+                if (Filter.CheckTag(item.gameObject))
                 {
                     colliders.Add(item);
                 }

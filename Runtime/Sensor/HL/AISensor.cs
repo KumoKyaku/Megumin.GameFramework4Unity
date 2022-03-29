@@ -43,6 +43,14 @@ namespace Megumin.GameFramework.Sensor
                 SightSensor = GetComponentInChildren<SightSensor>();
             }
 
+            for (int i = Ignore.Count - 1; i >= 0; i--)
+            {
+                if (Ignore[i] == null)
+                {
+                    Ignore.RemoveAt(i);
+                }
+            }
+
             var self = GetComponentInParent<T>();
             if (self != null)
             {

@@ -17,6 +17,13 @@ namespace Megumin.GameFramework.Sensor
         public HearingSensor HearingSensor;
         [ProtectedInInspector]
         public SightSensor SightSensor;
+        /// <summary>
+        /// 接近检测，实现检测夹角不应该过大，但是如果对象非常近，夹角很小的时候又看不见，就不是很合理
+        /// 所有使用一个视线检测，距离很近，但夹角很大的额外检测
+        /// 将不同Level放到Sight里去
+        /// </summary>
+        [ProtectedInInspector]
+        public SightSensor NearSensor;
 
         [ProtectedInInspector]
         public List<T> Ignore = new List<T>();
@@ -77,7 +84,7 @@ namespace Megumin.GameFramework.Sensor
             }
             nextCheckStamp = Time.time + checkDelta;
 
-            var mixR = Mathf.Max(HearingSensor.Radius, SightSensor.Radius);
+            var mixR = Mathf.Max(HearingSensor.Radius, SightSensor.Level.Max(x=>x.Radius));
             var collidersInRadius = PhysicsTest(mixR);
 
             SightTarget.Clear();

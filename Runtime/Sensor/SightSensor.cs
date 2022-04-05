@@ -1,21 +1,50 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
+using System.Linq;
 
 namespace Megumin.GameFramework.Sensor
 {
+    [Serializable]
+    public class SensorLevel
+    {
+        public string Name = "Custom";
+        [Range(0, 100)]
+        public float Radius = 15;
+
+        [Header("Debug")]
+        [Space]
+        public bool DebugSolid = false;
+        [Range(0, 10)]
+        public float DebugLineThickness = 2;
+    }
+
+    [Serializable]
+    public class SightLevel : SensorLevel
+    {
+        public Color DebugColor = new Color(0.38f, 0.85f, 0.25f, 0.07f);
+
+        [Header("Config")]
+        [Range(0, 360)]
+        public float HorizontalAngle = 120;
+        [Range(0, 360)]
+        public float VerticalAngle = 160;
+    }
+
     public partial class SightSensor : Sensor
     {
         [ReadOnlyInInspector]
         public string Type = SensorType.Sight;
 
-        [Range(0, 30)]
-        public float Radius = 15;
-        [Range(0, 360)]
-        public float HorizontalAngle = 120;
-        [Range(0, 360)]
-        public float VerticalAngle = 160;
+        //[Range(0, 30)]
+        //public float Radius = 15;
+        //[Range(0, 360)]
+        //public float HorizontalAngle = 120;
+        //[Range(0, 360)]
+        //public float VerticalAngle = 160;
 
+        public List<SightLevel> Level = new List<SightLevel>() { new SightLevel() };
 
         private void Start()
         {
@@ -32,7 +61,8 @@ namespace Megumin.GameFramework.Sensor
 
             if (PhysicsTestRadiusSelf)
             {
-                var collidersInRadius = Physics.OverlapSphere(transform.position, Radius);
+                var maxRadius = Level.Max(x => x.Radius);
+                var collidersInRadius = Physics.OverlapSphere(transform.position, maxRadius);
                 foreach (var item in collidersInRadius)
                 {
                     CheckTarget(item);
@@ -44,29 +74,42 @@ namespace Megumin.GameFramework.Sensor
         {
             return false;
         }
-        
-        public bool Check(MonoBehaviour target, Collider item)
+
+        public bool Check(MonoBehaviour target, Collider collider)
         {
             if (!enabled)
             {
                 return false;
             }
 
+            foreach (var level in Level)
+            {
+                if (CheckLevel(target, collider, level))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool CheckLevel(MonoBehaviour target, Collider collider, SightLevel level)
+        {
             //一个对象可能有多个碰撞盒，每个碰撞盒都要检测
             var dis = Vector3.Distance(transform.position, target.transform.position);
-            if (dis < Radius)
+            if (dis < level.Radius)
             {
                 var dir = target.transform.position - transform.position;
                 var hAngle = Vector3.SignedAngle(dir, transform.forward, transform.up);
                 hAngle = Mathf.Abs(hAngle);
-                if (hAngle > HorizontalAngle / 2)
+                if (hAngle > level.HorizontalAngle / 2)
                 {
                     return false;
                 }
 
                 var vAngle = Vector3.SignedAngle(dir, transform.forward, transform.right);
                 vAngle = Mathf.Abs(vAngle);
-                if (vAngle > VerticalAngle / 2)
+                if (vAngle > level.VerticalAngle / 2)
                 {
                     return false;
                 }
@@ -76,12 +119,12 @@ namespace Megumin.GameFramework.Sensor
             return false;
         }
 
-        [Header("Debug")]
-        [Space]
-        public bool DebugSolid = false;
-        public Color DebugColor = Color.green;
-        [Range(0, 10)]
-        public float DebugLineThickness = 2;
+        //[Header("Debug")]
+        //[Space]
+        //public bool DebugSolid = false;
+        //public Color DebugColor = Color.green;
+        //[Range(0, 10)]
+        //public float DebugLineThickness = 2;
     }
 }
 
@@ -100,21 +143,29 @@ namespace Megumin.GameFramework.Sensor
                 return;
             }
 
-            DrawArc(transform.up, transform.forward, HorizontalAngle);
-            DrawArc(transform.right, transform.forward, VerticalAngle);
+            foreach (var level in Level)
+            {
+                DrawSightLevel(level);
+            }
         }
 
-        public void DrawArc(Vector3 axis, Vector3 forward, float angle)
+        private void DrawSightLevel(SightLevel level)
         {
-            Handles.color = DebugColor;
-            if (DebugSolid)
+            DrawArc(transform.up, transform.forward, level.HorizontalAngle, level.Radius, level);
+            DrawArc(transform.right, transform.forward, level.VerticalAngle, level.Radius, level);
+        }
+
+        public void DrawArc(Vector3 axis, Vector3 forward, float angle, float radius, SightLevel level)
+        {
+            Handles.color = level.DebugColor;
+            if (level.DebugSolid)
             {
                 Handles.DrawSolidArc(transform.position, axis,
                                 forward,
-                                angle / 2, Radius);
+                                angle / 2, radius);
                 Handles.DrawSolidArc(transform.position, axis * -1,
                     forward,
-                    angle / 2, Radius);
+                    angle / 2, radius);
             }
 
             var wireColor = Handles.color;
@@ -122,19 +173,19 @@ namespace Megumin.GameFramework.Sensor
             Handles.color = wireColor;
 
             var leftDir = Quaternion.AngleAxis(-angle / 2, axis);
-            var left = leftDir * forward * Radius;
-            Handles.DrawLine(transform.position, transform.position + left, DebugLineThickness);
+            var left = leftDir * forward * radius;
+            Handles.DrawLine(transform.position, transform.position + left, level.DebugLineThickness);
 
             var rightDir = Quaternion.AngleAxis(angle / 2, axis);
-            var right = rightDir * forward * Radius;
-            Handles.DrawLine(transform.position, transform.position + right, DebugLineThickness);
+            var right = rightDir * forward * radius;
+            Handles.DrawLine(transform.position, transform.position + right, level.DebugLineThickness);
 
             Handles.DrawWireArc(transform.position, axis,
                 forward,
-                angle / 2, Radius, DebugLineThickness);
+                angle / 2, radius, level.DebugLineThickness);
             Handles.DrawWireArc(transform.position, axis * -1,
                 forward,
-                angle / 2, Radius, DebugLineThickness);
+                angle / 2, radius, level.DebugLineThickness);
         }
     }
 }

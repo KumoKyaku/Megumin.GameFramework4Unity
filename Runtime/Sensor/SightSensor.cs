@@ -61,9 +61,10 @@ namespace Megumin.GameFramework.Sensor
 
             if (PhysicsTestRadiusSelf)
             {
-                var maxRadius = Level.Max(x => x.Radius);
-                var collidersInRadius = Physics.OverlapSphere(transform.position, maxRadius);
-                foreach (var item in collidersInRadius)
+                var maxR = Level.Max(x => x.Radius);
+
+                var res = PhysicsTest(maxR);
+                foreach (var item in res)
                 {
                     CheckTarget(item);
                 }

@@ -8,27 +8,33 @@ namespace Megumin.GameFramework.Sensor
     public class Sensor : MonoBehaviour
     {
         /// <summary>
-        /// 探测器是不是自己进行物理检测
+        /// 探测器是不是自己进行物理检测,可能由高级复合感知模块统一进行物理测试
         /// </summary>
         public bool PhysicsTestRadiusSelf = false;
         public GameObjectFilter Filter;
 
-        public virtual List<Collider> PhysicsTest(float mixR)
+        public virtual List<Collider> PhysicsTest(float maxR,GameObjectFilter overrideFilter = null)
         {
-            Collider[] res = Array.Empty<Collider>();
-            if (Filter.LayerMask.Enabled)
+            var filter = this.Filter;
+            if (overrideFilter != null)
             {
-                res = Physics.OverlapSphere(transform.position, mixR, Filter.LayerMask.Value);
+                filter = overrideFilter;
+            }
+
+            Collider[] res = Array.Empty<Collider>();
+            if (filter.LayerMask.Enabled)
+            {
+                res = Physics.OverlapSphere(transform.position, maxR, filter.LayerMask.Value);
             }
             else
             {
-                res = Physics.OverlapSphere(transform.position, mixR);
+                res = Physics.OverlapSphere(transform.position, maxR);
             }
 
             List<Collider> colliders = new List<Collider>();
             foreach (var item in res)
             {
-                if (Filter.CheckTag(item.gameObject))
+                if (filter.CheckTag(item.gameObject))
                 {
                     colliders.Add(item);
                 }

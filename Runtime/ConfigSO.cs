@@ -32,6 +32,6 @@ namespace Megumin.GameFramework
         [field: SerializeField]
         public Sprite Icon { get; set; }
 
-        public string Name => name;
+        public virtual string Name => name;
     }
 }

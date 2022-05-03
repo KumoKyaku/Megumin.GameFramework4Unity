@@ -4,7 +4,18 @@ using UnityEngine;
 
 namespace Megumin.GameFramework
 {
-    public class ConfigSO : ScriptableObject
+    public interface IMetaGUIDable
+    {
+        string MetaGUID { get; set; }
+    }
+
+    public interface ITypeIDable<T>
+        where T : struct
+    {
+        T TypeID { get; set; }
+    }
+
+    public class ConfigSO : ScriptableObject, IMetaGUIDable, ITypeIDable<long>
     {
         [field: SerializeField]
         [field: MetaGUID]

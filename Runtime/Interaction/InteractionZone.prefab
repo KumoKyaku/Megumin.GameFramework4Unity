@@ -32,7 +32,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!135 &8981003260368111844
 SphereCollider:
@@ -80,15 +80,12 @@ MonoBehaviour:
       Enabled: 1
       Value:
         serializedVersion: 2
-        m_Bits: 131
+        m_Bits: 1065603
     TagMask:
       Enabled: 0
       Value:
         Tags:
         - Untagged
-  MaskLayer:
-    serializedVersion: 2
-    m_Bits: 131
   GameObjectTrigger: 0
   OnGameObjectTrigger:
     m_PersistentCalls:

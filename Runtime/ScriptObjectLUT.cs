@@ -9,7 +9,12 @@ using UnityEditor;
 
 namespace Megumin.GameFramework
 {
+    /// <summary>
+    /// BUG SubAsset，一个guid可能对应多个So实例。
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public abstract class ScriptObjectLUT<T> : ScriptableObject, ISerializationCallbackReceiver
+        where T : Object
     {
         [field: SerializeField]
         [field: Path]
@@ -51,6 +56,9 @@ namespace Megumin.GameFramework
             }
         }
 
+        /// <summary>
+        /// 基于文件创建时间的排序处理SubAsset不一定准确。
+        /// </summary>
         [Button(order = -100)]
         public void CollectAll()
         {
@@ -78,59 +86,64 @@ namespace Megumin.GameFramework
             for (int i = 0; i < GUIDs.Length; i++)
             {
                 string path = AssetDatabase.GUIDToAssetPath(GUIDs[i]);
-                var so = AssetDatabase.LoadAssetAtPath(path, typeof(ScriptableObject));
-
-                if (so is IMetaGUIDable metaGUIDable)
+                var sos = AssetDatabase.LoadAllAssetsAtPath(path);
+                foreach (var item in sos)
                 {
-                    if (metaGUIDable.MetaGUID != GUIDs[i])
+                    if (item is T so)
                     {
-                        metaGUIDable.MetaGUID = GUIDs[i];
-                        EditorUtility.SetDirty(so);
-                    }
-                }
-
-                if (so is ITypeIDable<long> typeIDable)
-                {
-                    if (typeIDable.TypeID <= 10000000)
-                    {
-                        //统一分配TypeID.
-                        max++;
-                        typeIDable.TypeID = max;
-                        EditorUtility.SetDirty(so);
-                    }
-
-                    if (TypeIDDic.TryGetValue(typeIDable.TypeID, out var cso))
-                    {
-                        if (cso is ITypeIDable<long> csotypeIDable && cso is UnityEngine.Object cuo)
+                        if (so is IMetaGUIDable metaGUIDable)
                         {
-                            if (typeIDable != csotypeIDable)
+                            if (metaGUIDable.MetaGUID != GUIDs[i])
                             {
-                                //类型ID冲突，将后创建的重新分配类型ID。
-                                var thisCtime = so.GetCreationTimeUtc();
-                                var tarCTime = cuo.GetCreationTimeUtc();
-                                if (thisCtime > tarCTime)
-                                {
-                                    //重新分配TypeID.
-                                    max++;
-                                    typeIDable.TypeID = max;
-                                    EditorUtility.SetDirty(so);
-                                }
-                                else
-                                {
-                                    //重新分配TypeID.
-                                    max++;
-                                    csotypeIDable.TypeID = max;
-                                    EditorUtility.SetDirty(cuo);
-                                    TypeIDDic[csotypeIDable.TypeID] = cso;
-                                }
+                                metaGUIDable.MetaGUID = GUIDs[i];
+                                EditorUtility.SetDirty(so);
                             }
                         }
 
-                    }
+                        if (so is ITypeIDable<long> typeIDable)
+                        {
+                            if (typeIDable.TypeID <= 10000000)
+                            {
+                                //统一分配TypeID.
+                                max++;
+                                typeIDable.TypeID = max;
+                                EditorUtility.SetDirty(so);
+                            }
 
-                    if (so is T tso)
-                    {
-                        TypeIDDic[typeIDable.TypeID] = tso;
+                            if (TypeIDDic.TryGetValue(typeIDable.TypeID, out var cso))
+                            {
+                                if (cso is ITypeIDable<long> csotypeIDable && cso is UnityEngine.Object cuo)
+                                {
+                                    if (typeIDable != csotypeIDable)
+                                    {
+                                        //类型ID冲突，将后创建的重新分配类型ID。
+                                        var thisCtime = so.GetCreationTimeUtc();
+                                        var tarCTime = cuo.GetCreationTimeUtc();
+                                        if (thisCtime > tarCTime)
+                                        {
+                                            //重新分配TypeID.
+                                            max++;
+                                            typeIDable.TypeID = max;
+                                            EditorUtility.SetDirty(so);
+                                        }
+                                        else
+                                        {
+                                            //重新分配TypeID.
+                                            max++;
+                                            csotypeIDable.TypeID = max;
+                                            EditorUtility.SetDirty(cuo);
+                                            TypeIDDic[csotypeIDable.TypeID] = cso;
+                                        }
+                                    }
+                                }
+
+                            }
+
+                            if (so is T tso)
+                            {
+                                TypeIDDic[typeIDable.TypeID] = tso;
+                            }
+                        }
                     }
                 }
             }
@@ -139,18 +152,23 @@ namespace Megumin.GameFramework
             for (int i = 0; i < GUIDs.Length; i++)
             {
                 string path = AssetDatabase.GUIDToAssetPath(GUIDs[i]);
-                var so = AssetDatabase.LoadAssetAtPath(path, typeof(ScriptableObject));
-
-                if (so is T tso)
+                var sos = AssetDatabase.LoadAllAssetsAtPath(path);
+                foreach (var item in sos)
                 {
-                    AllConfig.Add(tso);
-                    AllGuid.Add(GUIDs[i]);
-                    GuidDic[GUIDs[i]] = tso;
-                }
+                    if (item is T so)
+                    {
+                        if (so is T tso)
+                        {
+                            AllConfig.Add(tso);
+                            AllGuid.Add(GUIDs[i]);
+                            GuidDic[GUIDs[i]] = tso;
+                        }
 
-                if (so is ITypeIDable<long> typeIDable)
-                {
-                    AllTypeID.Add(typeIDable.TypeID);
+                        if (so is ITypeIDable<long> typeIDable)
+                        {
+                            AllTypeID.Add(typeIDable.TypeID);
+                        }
+                    }
                 }
             }
 

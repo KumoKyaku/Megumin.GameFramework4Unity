@@ -250,6 +250,7 @@ namespace Megumin.GameFramework.Numerical
         {
             while (Todos.TryDequeue(out var todo))
             {
+                Debug.Log("ApplyChangeList");
                 if (NumericalProperty.TryGetValue(todo.Type, out var prop))
                 {
                     todo.PropertyChange.CalFinalChangeValue(this);
@@ -271,6 +272,31 @@ namespace Megumin.GameFramework.Numerical
                 {
                     todo.ResultSource?.SetResult(-1);
                 }
+            }
+        }
+
+        public int ChangeProperty(PropertyChange PropertyChange)
+        {
+            if (NumericalProperty.TryGetValue(PropertyChange.TargetType,out var prop))
+            {
+                PropertyChange.CalFinalChangeValue(this);
+                var newv = prop.BaseValue + PropertyChange.LastCalValue;
+                var maxType = prop.GetMaxType();
+                if (maxType.HasValue)
+                {
+                    if (NumericalProperty.TryGetValue(maxType.Value, out var maxProp))
+                    {
+                        //限制最大值。
+                        newv = Math.Min(newv, maxProp.Value);
+                    }
+                }
+
+                prop.BaseValue = newv;
+                return 0;
+            }
+            else
+            {
+                return -1;
             }
         }
 

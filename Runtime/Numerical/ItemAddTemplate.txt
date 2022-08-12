@@ -1,0 +1,46 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace Megumin.GameFramework.Numerical
+{
+    public partial class NumericalPropertyTypeDefine
+    {
+        public const string 防御力基础值 = nameof(防御力基础值);
+
+        public const string 防御力装备固定加成 = nameof(防御力装备固定加成);
+        public const string 防御力装备系数加成 = nameof(防御力装备系数加成);
+        public const string 防御力装备加成后总计 = nameof(防御力装备加成后总计);
+
+        public const string 防御力 = nameof(防御力);
+    }
+
+    public partial class 防御力_Property_Generic
+    {
+        public Dictionary<string, ChildPorperty> allP = new Dictionary<string, ChildPorperty>();
+
+        public ConstValuePorperty 基础值 = new() { Type = NumericalPropertyTypeDefine.防御力基础值 };
+
+        public SumChildPopperty 装备固定加成 = new() { Type = NumericalPropertyTypeDefine.防御力装备固定加成 };
+        public SumChildPopperty 装备系数加成 = new() { Type = NumericalPropertyTypeDefine.防御力装备系数加成 };
+        public LayerProperty 装备加成后总计 = new() { Type = NumericalPropertyTypeDefine.防御力装备加成后总计 };
+
+        public LayerProperty 面板值 => 装备加成后总计;
+
+        public 防御力_Property_Generic()
+        {
+            allP.Clear();
+
+            allP.Add(基础值.Type, 基础值);
+            allP.Add(装备固定加成.Type, 装备固定加成);
+            allP.Add(装备系数加成.Type, 装备系数加成);
+            allP.Add(装备加成后总计.Type, 装备加成后总计);
+            allP.Add(面板值.Type, 面板值);
+
+            装备加成后总计.Add(基础值);
+            装备加成后总计.Add(装备固定加成);
+            装备加成后总计.SetLayerScale(装备系数加成);
+        }
+    }
+}

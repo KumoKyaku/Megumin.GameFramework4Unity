@@ -11,9 +11,15 @@ namespace Megumin.GameFramework.Numerical
     public class ChildPorperty
     {
         public string Type;
+        public string MainType;
+        public string SubType;
+        public int Value { get; private set; }
         public double DValue { get; private set; }
         public bool BroadCast = false;
 
+        /// <summary>
+        /// Todo改为事件，事件节省空间，不用申请数组内存
+        /// </summary>
         public List<ChildPorperty> RefBy = new List<ChildPorperty>();
 
         public virtual void ReCalRefBy()

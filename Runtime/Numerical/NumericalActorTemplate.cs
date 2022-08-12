@@ -27,6 +27,7 @@ namespace Megumin.GameFramework.Numerical
                 {
                     //生成字段
                     generator.Push(@$"Dictionary<string, ChildPorperty> allP = new Dictionary<string, ChildPorperty>();");
+                    generator.Push(@$"");
 
                     foreach (var item in Property)
                     {
@@ -41,22 +42,15 @@ namespace Megumin.GameFramework.Numerical
                     {
                         generator.Push(@$"allP.Clear();");
 
-                        generator.Push(@$"");
                         foreach (var item in Property)
                         {
                             var g = item.GetMemberAddDicCSCodeGenerator();
                             generator.Push(g);
                         }
 
-                        generator.Push(@$"");
-                        foreach (var item in Property)
-                        {
-                            var g = item.GetMemberBindDicCSCodeGenerator();
-                            generator.Push(g);
-                        }
-
                         //开启值传播
                         generator.Push(@$"");
+                        generator.Push(@$"//开启所有值传播");
                         generator.Push(@$"foreach (var item in allP)");
                         using (generator.NewScope)
                         {
@@ -67,6 +61,17 @@ namespace Megumin.GameFramework.Numerical
             }
 
             generator.GenerateNear(this);
+        }
+
+        [Button]
+        public void GenericCodeAddGenericPorp()
+        {
+            foreach (var item in Property)
+            {
+                item.GenericCode();
+            }
+
+            GenericCode();
         }
     }
 }

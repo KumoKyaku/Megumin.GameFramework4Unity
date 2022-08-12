@@ -1,0 +1,69 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace Megumin.GameFramework.Numerical
+{
+    public partial class NumericalPropertyTypeDefine
+    {
+        public const string $(ClassName)基础值 = nameof($(ClassName)基础值);
+
+        public const string $(ClassName)装备固定加成 = nameof($(ClassName)装备固定加成);
+        public const string $(ClassName)装备系数加成 = nameof($(ClassName)装备系数加成);
+        public const string $(ClassName)装备加成后总计 = nameof($(ClassName)装备加成后总计);
+
+        public const string $(ClassName)属性关联固定加成 = nameof($(ClassName)属性关联固定加成);
+        public const string $(ClassName)属性关联系数加成 = nameof($(ClassName)属性关联系数加成);
+        public const string $(ClassName)属性关联后总计 = nameof($(ClassName)属性关联后总计);
+
+        public const string $(ClassName)后期固定加成 = nameof($(ClassName)后期固定加成);
+        public const string $(ClassName)后期系数加成 = nameof($(ClassName)后期系数加成);
+        public const string $(ClassName) = nameof($(ClassName));
+    }
+
+    public partial class $(ClassName)_Property_Generic
+    {
+        public Dictionary<string, ChildPorperty> allP = new Dictionary<string, ChildPorperty>();
+
+        public ConstValuePorperty 基础值 = new() { Type = NumericalPropertyTypeDefine.$(ClassName)基础值 };
+
+        public SumChildPopperty 装备固定加成 = new() { Type = NumericalPropertyTypeDefine.$(ClassName)装备固定加成 };
+        public SumChildPopperty 装备系数加成 = new() { Type = NumericalPropertyTypeDefine.$(ClassName)装备系数加成 };
+        public LayerProperty 装备加成后总计 = new() { Type = NumericalPropertyTypeDefine.$(ClassName)装备加成后总计 };
+
+        public SumChildPopperty 属性关联固定加成 = new() { Type = NumericalPropertyTypeDefine.$(ClassName)属性关联固定加成 };
+        public SumChildPopperty 属性关联系数加成 = new() { Type = NumericalPropertyTypeDefine.$(ClassName)属性关联系数加成 };
+        public LayerProperty 属性关联后总计 = new() { Type = NumericalPropertyTypeDefine.$(ClassName)属性关联后总计 };
+
+        public SumChildPopperty 后期固定加成 = new() { Type = NumericalPropertyTypeDefine.$(ClassName)后期固定加成 };
+        public SumChildPopperty 后期系数加成 = new() { Type = NumericalPropertyTypeDefine.$(ClassName)后期系数加成 };
+        public LayerProperty 面板值 = new() { Type = NumericalPropertyTypeDefine.$(ClassName) };
+
+        public $(ClassName)_Property_Generic()
+        {
+            allP.Clear();
+
+            allP.Add(基础值.Type, 基础值);
+            allP.Add(装备固定加成.Type, 装备固定加成);
+            allP.Add(装备系数加成.Type, 装备系数加成);
+            allP.Add(装备加成后总计.Type, 装备加成后总计);
+            allP.Add(属性关联固定加成.Type, 属性关联固定加成);
+            allP.Add(属性关联系数加成.Type, 属性关联系数加成);
+            allP.Add(属性关联后总计.Type, 属性关联后总计);
+            allP.Add(后期固定加成.Type, 后期固定加成);
+            allP.Add(后期系数加成.Type, 后期系数加成);
+            allP.Add(面板值.Type, 面板值);
+
+            装备加成后总计.Add(基础值);
+            装备加成后总计.Add(装备固定加成);
+            装备加成后总计.SetLayerScale(装备系数加成);
+            属性关联后总计.Add(装备加成后总计);
+            属性关联后总计.Add(属性关联固定加成);
+            属性关联后总计.SetLayerScale(属性关联系数加成);
+            面板值.Add(属性关联后总计);
+            面板值.Add(后期固定加成);
+            面板值.SetLayerScale(后期系数加成);
+        }
+    }
+}

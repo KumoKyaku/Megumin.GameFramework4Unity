@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Megumin.GameFramework.Numerical
 {
     /// <summary>
-    /// ¿É×÷Îª±ğµÄÊôĞÔµÄ×ÓµÄÊôĞÔ
+    /// å¯ä½œä¸ºåˆ«çš„å±æ€§çš„å­çš„å±æ€§
     /// </summary>
     public class ChildPorperty
     {
@@ -35,10 +35,22 @@ namespace Megumin.GameFramework.Numerical
                 ReCalRefBy();
             }
         }
+
+        public override string ToString()
+        {
+            if (string.IsNullOrEmpty(Type))
+            {
+                return base.ToString();
+            }
+            else
+            {
+                return Type;
+            }
+        }
     }
 
     /// <summary>
-    /// ³£ÊıÊôĞÔ
+    /// å¸¸æ•°å±æ€§
     /// </summary>
     public class ConstValuePorperty : ChildPorperty
     {
@@ -49,7 +61,7 @@ namespace Megumin.GameFramework.Numerical
     }
 
     /// <summary>
-    /// ×éºÏÊôĞÔ£¬ĞèÒªÔËËãµÄÊôĞÔ£¬¶à¸ö×ÓÔËËãµÃµ½½á¹û
+    /// ç»„åˆå±æ€§ï¼Œéœ€è¦è¿ç®—çš„å±æ€§ï¼Œå¤šä¸ªå­è¿ç®—å¾—åˆ°ç»“æœ
     /// </summary>
     public abstract class CombinePoperty : ChildPorperty
     {
@@ -117,7 +129,7 @@ namespace Megumin.GameFramework.Numerical
         }
 
         /// <summary>
-        /// ¶Ô×ÓÏî½øĞĞÔËËã
+        /// å¯¹å­é¡¹è¿›è¡Œè¿ç®—
         /// </summary>
         /// <returns></returns>
         protected abstract double OprationChild();
@@ -156,8 +168,25 @@ namespace Megumin.GameFramework.Numerical
             {
                 sum += item.Cal();
             }
-            var v = sum * (1 + LayerScale.DValue);
+            var v = sum * (1 + LayerScale?.DValue ?? 0);
             return v;
         }
+    }
+
+    public class ItemPropertyPostCombindProp
+    {
+        public ConstValuePorperty åŸºç¡€å€¼ = new();
+
+        public SumChildPopperty è£…å¤‡å›ºå®šåŠ æˆ = new();
+        public SumChildPopperty è£…å¤‡ç³»æ•°åŠ æˆ = new();
+        public LayerProperty åŠ›è£…å¤‡åŠ æˆåæ€»è®¡ = new();
+
+        public SumChildPopperty å±æ€§å…³è”å›ºå®šåŠ æˆ = new();
+        public SumChildPopperty å±æ€§å…³è”ç³»æ•°åŠ æˆ = new();
+        public LayerProperty å±æ€§å…³è”åæ€»è®¡ = new();
+
+        public SumChildPopperty åæœŸå›ºå®šåŠ æˆ = new();
+        public SumChildPopperty åæœŸç³»æ•°åŠ æˆ = new();
+        public LayerProperty é¢æ¿å€¼ = new();
     }
 }

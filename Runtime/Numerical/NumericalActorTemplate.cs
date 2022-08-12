@@ -26,7 +26,7 @@ namespace Megumin.GameFramework.Numerical
                 using (generator.NewScope)
                 {
                     //生成字段
-                    generator.Push(@$"Dictionary<string, ChildPorperty> allP = new Dictionary<string, ChildPorperty>();");
+                    generator.Push(@$"public Dictionary<string, ChildPorperty> allP = new Dictionary<string, ChildPorperty>();");
                     generator.Push(@$"");
 
                     foreach (var item in Property)

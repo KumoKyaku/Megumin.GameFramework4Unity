@@ -22,23 +22,26 @@ namespace Megumin.GameFramework.Numerical
         /// </summary>
         public List<ChildPorperty> RefBy = new List<ChildPorperty>();
 
-        public virtual void ReCalRefBy()
+        public virtual void BroadCastRefBy()
         {
             if (BroadCast)
             {
                 foreach (var item in RefBy)
                 {
-                    item.ReCalRefBy();
+                    item.ReCalValue();
                 }
             }
         }
+
+        public virtual void ReCalValue() { }
 
         protected void SetNewValue(double newValue)
         {
             if (DValue != newValue)
             {
                 DValue = newValue;
-                ReCalRefBy();
+                Value = (int)newValue;
+                BroadCastRefBy();
             }
         }
 
@@ -75,18 +78,23 @@ namespace Megumin.GameFramework.Numerical
         {
             public double ConstValue;
             public ChildPorperty Connect;
-            public double factor;
-            public object source;
+            public double Scale;
+            public object Source;
 
             public double Cal()
             {
                 double v = ConstValue + Connect?.DValue ?? 0;
-                v *= factor;
+                v *= Scale;
                 return v;
+            }
+
+            public override string ToString()
+            {
+                return $"{Source}--{Connect}--ConstValue:{ConstValue}--Scale:{Scale}";
             }
         }
 
-        protected List<ChildProperty> chileds { get; } = new List<ChildProperty>();
+        protected List<ChildProperty> children { get; } = new List<ChildProperty>();
 
         public void Add(object souce, double baseV, ChildPorperty property, double factor)
         {
@@ -94,16 +102,18 @@ namespace Megumin.GameFramework.Numerical
             {
                 ConstValue = baseV,
                 Connect = property,
-                source = souce,
-                factor = factor,
+                Source = souce,
+                Scale = factor,
             };
+
+            children.Add(child);
 
             if (property != null)
             {
                 property.RefBy.Add(this);
             }
 
-            CalV();
+            ReCalValue();
         }
 
         public void Add(ChildPorperty p)
@@ -123,11 +133,11 @@ namespace Megumin.GameFramework.Numerical
 
         public void Remove(object source)
         {
-            chileds.RemoveAll(ele => ele.source == source);
-            CalV();
+            children.RemoveAll(ele => ele.Source == source);
+            ReCalValue();
         }
 
-        public void CalV()
+        public override void ReCalValue()
         {
             double v = OprationChild();
 
@@ -141,12 +151,12 @@ namespace Megumin.GameFramework.Numerical
         protected abstract double OprationChild();
     }
 
-    public class SumChildPopperty : CombinePoperty
+    public sealed class SumChildPopperty : CombinePoperty
     {
         protected override double OprationChild()
         {
             double v = 0;
-            foreach (var item in chileds)
+            foreach (var item in children)
             {
                 v += item.Cal();
             }
@@ -155,7 +165,7 @@ namespace Megumin.GameFramework.Numerical
         }
     }
 
-    public class LayerProperty : CombinePoperty
+    public sealed class LayerProperty : CombinePoperty
     {
         public SumChildPopperty LayerScale;
 
@@ -164,13 +174,13 @@ namespace Megumin.GameFramework.Numerical
             LayerScale = property;
             property.RefBy.Add(this);
 
-            CalV();
+            ReCalValue();
         }
 
         protected override double OprationChild()
         {
             double sum = 0;
-            foreach (var item in chileds)
+            foreach (var item in children)
             {
                 sum += item.Cal();
             }

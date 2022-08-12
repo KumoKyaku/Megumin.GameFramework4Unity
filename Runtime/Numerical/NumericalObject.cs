@@ -225,56 +225,6 @@ namespace Megumin.GameFramework.Numerical
         public Dictionary<NumericalType, NumericalProperty2> NumericalProperty { get; internal set; }
             = new Dictionary<NumericalType, NumericalProperty2>();
 
-        public Task<int> ChangePropertyOnFrameline(PropertyChange change) => ChangePropertyAsync(change);
-
-        Task<int> ChangePropertyAsync(PropertyChange propertyChange)
-        {
-            TaskCompletionSource<int> source = new TaskCompletionSource<int>();
-            TodoChange change = new TodoChange();
-            change.Type = propertyChange.TargetType;
-            change.PropertyChange = propertyChange;
-            change.ResultSource = source;
-            Todos.Enqueue(change);
-            return source.Task;
-        }
-
-        internal class TodoChange
-        {
-            public TaskCompletionSource<int> ResultSource { get; internal set; }
-            public NumericalType Type { get; internal set; }
-            public PropertyChange PropertyChange { get; internal set; }
-        }
-
-        Queue<TodoChange> Todos = new Queue<TodoChange>();
-        public void ApplyChangeList()
-        {
-            while (Todos.TryDequeue(out var todo))
-            {
-                Debug.Log("ApplyChangeList");
-                if (NumericalProperty.TryGetValue(todo.Type, out var prop))
-                {
-                    todo.PropertyChange.CalFinalChangeValue(this);
-                    var newv = prop.BaseValue + todo.PropertyChange.LastCalValue;
-                    var maxType = prop.GetMaxType();
-                    if (maxType.HasValue)
-                    {
-                        if (NumericalProperty.TryGetValue(maxType.Value, out var maxProp))
-                        {
-                            //限制最大值。
-                            newv = Math.Min(newv, maxProp.Value);
-                        }
-                    }
-
-                    prop.BaseValue = newv;
-                    todo.ResultSource?.SetResult(0);
-                }
-                else
-                {
-                    todo.ResultSource?.SetResult(-1);
-                }
-            }
-        }
-
         public int ChangeProperty(PropertyChange PropertyChange)
         {
             if (NumericalProperty.TryGetValue(PropertyChange.TargetType,out var prop))

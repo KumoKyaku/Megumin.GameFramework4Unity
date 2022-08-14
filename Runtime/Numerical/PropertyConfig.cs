@@ -15,8 +15,8 @@ namespace Megumin.GameFramework.Numerical
     /// </summary>
     public interface IPropertyChange : IPropertyConfig
     {
-        double CalChangeValue(IPropertyFinder target = null, IPropertyFinder creator = null);
-        double CalChangeValue(Func<int, IPropertyFinder> findFunc);
+        float CalChangeValue(IPropertyFinder target = null, IPropertyFinder creator = null);
+        float CalChangeValue(Func<int, IPropertyFinder> findFunc);
     }
 
     /// <summary>

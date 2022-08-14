@@ -14,7 +14,7 @@ namespace Megumin.GameFramework.Numerical
         public string MainType;
         public string SubType;
         public int Value { get; private set; }
-        public double DValue { get; private set; }
+        public float FValue { get; private set; }
         public bool BroadCast = false;
 
         /// <summary>
@@ -35,11 +35,11 @@ namespace Megumin.GameFramework.Numerical
 
         public virtual void ReCalValue() { }
 
-        protected void SetNewValue(double newValue)
+        protected void SetNewValue(float newValue)
         {
-            if (DValue != newValue)
+            if (FValue != newValue)
             {
-                DValue = newValue;
+                FValue = newValue;
                 Value = (int)newValue;
                 BroadCastRefBy();
             }
@@ -63,7 +63,7 @@ namespace Megumin.GameFramework.Numerical
     /// </summary>
     public class ConstValuePorperty : Porperty
     {
-        public void SetValue(double Value)
+        public void SetValue(float Value)
         {
             SetNewValue(Value);
         }
@@ -71,21 +71,21 @@ namespace Megumin.GameFramework.Numerical
 
     public class ChildProperty
     {
-        public double ConstValue;
+        public float ConstValue;
         public Porperty Connect;
-        public double Scale = 1;
+        public float Scale = 1;
         public object Source;
 
         /// <summary>
         /// TODO 多态此类型，优化计算？优化计算和虚函数哪个效率更好？
         /// </summary>
         /// <returns></returns>
-        public double Cal()
+        public float Cal()
         {
-            double v = ConstValue;
+            float v = ConstValue;
             if (Connect != null)
             {
-                v += Connect.DValue;
+                v += Connect.FValue;
             }
             v *= Scale;
             return v;
@@ -104,7 +104,7 @@ namespace Megumin.GameFramework.Numerical
     {
         protected List<ChildProperty> Children { get; } = new List<ChildProperty>();
 
-        public void Add(object souce, double baseV, Porperty property, double scale)
+        public void Add(object souce, float baseV, Porperty property, float scale)
         {
             ChildProperty child = new ChildProperty()
             {
@@ -134,12 +134,12 @@ namespace Megumin.GameFramework.Numerical
             Add(null, 0, p, 1);
         }
 
-        public void Add(object souce, Porperty p, double scale = 1)
+        public void Add(object souce, Porperty p, float scale = 1)
         {
             Add(souce, 0, p, scale);
         }
 
-        public void Add(object souce, double constV, double scale = 1)
+        public void Add(object souce, float constV, float scale = 1)
         {
             Add(souce, constV, null, scale);
         }
@@ -152,7 +152,7 @@ namespace Megumin.GameFramework.Numerical
 
         public override void ReCalValue()
         {
-            double v = OprationChild();
+            float v = OprationChild();
 
             SetNewValue(v);
         }
@@ -161,14 +161,14 @@ namespace Megumin.GameFramework.Numerical
         /// 对子项进行运算
         /// </summary>
         /// <returns></returns>
-        protected abstract double OprationChild();
+        protected abstract float OprationChild();
     }
 
     public sealed class SumChildPopperty : CombinePoperty
     {
-        protected override double OprationChild()
+        protected override float OprationChild()
         {
-            double v = 0;
+            float v = 0;
             foreach (var item in Children)
             {
                 v += item.Cal();
@@ -190,14 +190,14 @@ namespace Megumin.GameFramework.Numerical
             ReCalValue();
         }
 
-        protected override double OprationChild()
+        protected override float OprationChild()
         {
-            double sum = 0;
+            float sum = 0;
             foreach (var item in Children)
             {
                 sum += item.Cal();
             }
-            var v = sum * (1 + LayerScale?.DValue ?? 0);
+            var v = sum * (1 + LayerScale?.FValue ?? 0);
             return v;
         }
     }

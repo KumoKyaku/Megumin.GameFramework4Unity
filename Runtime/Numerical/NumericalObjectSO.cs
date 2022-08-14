@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Megumin.GameFramework.Numerical
 {
-    public class NumericalActorTemplate : ScriptableObject
+    public class NumericalObjectSO : ScriptableObject
     {
         public List<NumericalPropertySO> Property = new List<NumericalPropertySO>();
 
@@ -26,7 +26,7 @@ namespace Megumin.GameFramework.Numerical
                 using (generator.NewScope)
                 {
                     //生成字段
-                    generator.Push(@$"public Dictionary<string, ChildPorperty> allP = new Dictionary<string, ChildPorperty>();");
+                    generator.Push(@$"public Dictionary<string, Porperty> allP = new Dictionary<string, Porperty>();");
                     generator.Push(@$"");
 
                     foreach (var item in Property)

@@ -24,7 +24,7 @@ namespace Megumin.GameFramework.Numerical
 
     public partial class $(ClassName)_Property_Generic
     {
-        public Dictionary<string, ChildPorperty> allP = new Dictionary<string, ChildPorperty>();
+        public Dictionary<string, Porperty> allP = new Dictionary<string, Porperty>();
 
         public ConstValuePorperty 基础值 = new() { Type = NumericalPropertyTypeDefine.$(ClassName)基础值 };
 

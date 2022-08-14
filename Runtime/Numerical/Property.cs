@@ -73,7 +73,7 @@ namespace Megumin.GameFramework.Numerical
     {
         public double ConstValue;
         public Porperty Connect;
-        public double Scale;
+        public double Scale = 1;
         public object Source;
 
         /// <summary>
@@ -82,7 +82,11 @@ namespace Megumin.GameFramework.Numerical
         /// <returns></returns>
         public double Cal()
         {
-            double v = ConstValue + Connect?.DValue ?? 0;
+            double v = ConstValue;
+            if (Connect != null)
+            {
+                v += Connect.DValue;
+            }
             v *= Scale;
             return v;
         }

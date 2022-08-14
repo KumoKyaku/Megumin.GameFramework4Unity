@@ -7,25 +7,25 @@ namespace Megumin.GameFramework.Numerical
 {
     public partial class NumericalPropertyTypeDefine
     {
-        public const string 防御力基础值 = nameof(防御力基础值);
+        public const string $(ClassName)基础值 = nameof($(ClassName)基础值);
 
-        public const string 防御力装备固定加成 = nameof(防御力装备固定加成);
-        public const string 防御力装备系数加成 = nameof(防御力装备系数加成);
+        public const string $(ClassName)装备固定加成 = nameof($(ClassName)装备固定加成);
+        public const string $(ClassName)装备系数加成 = nameof($(ClassName)装备系数加成);
 
-        public const string 防御力 = nameof(防御力);
+        public const string $(ClassName) = nameof($(ClassName));
     }
 
-    public partial class 防御力_Property_Generic
+    public partial class $(ClassName)_Property_Generic
     {
-        public Dictionary<string, ChildPorperty> allP = new Dictionary<string, ChildPorperty>();
+        public Dictionary<string, Porperty> allP = new Dictionary<string, Porperty>();
 
-        public ConstValuePorperty 基础值 = new() { Type = NumericalPropertyTypeDefine.防御力基础值 };
+        public ConstValuePorperty 基础值 = new() { Type = NumericalPropertyTypeDefine.$(ClassName)基础值 };
 
-        public SumChildPopperty 装备固定加成 = new() { Type = NumericalPropertyTypeDefine.防御力装备固定加成 };
-        public SumChildPopperty 装备系数加成 = new() { Type = NumericalPropertyTypeDefine.防御力装备系数加成 };
-        public LayerProperty 面板值 = new() { Type = NumericalPropertyTypeDefine.防御力 };
+        public SumChildPopperty 装备固定加成 = new() { Type = NumericalPropertyTypeDefine.$(ClassName)装备固定加成 };
+        public SumChildPopperty 装备系数加成 = new() { Type = NumericalPropertyTypeDefine.$(ClassName)装备系数加成 };
+        public LayerProperty 面板值 = new() { Type = NumericalPropertyTypeDefine.$(ClassName) };
 
-        public 防御力_Property_Generic()
+        public $(ClassName)_Property_Generic()
         {
             allP.Clear();
 

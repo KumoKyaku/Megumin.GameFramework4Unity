@@ -46,22 +46,22 @@ namespace Megumin.GameFramework.Numerical
         }
     }
 
-    public sealed class ExtraValueIntMultipleValue : IntMultipleValue<object>
-    {
-        //public ExtraValueIntMultipleValue(object key, int v = default)
-        //    :base(key, v)
-        //{
+    //public sealed class ExtraValueIntMultipleValue : IntMultipleValue<object>
+    //{
+    //    //public ExtraValueIntMultipleValue(object key, int v = default)
+    //    //    :base(key, v)
+    //    //{
 
-        //}
+    //    //}
 
-        public override int RemoveAll()
-        {
-            ElementDic.Clear();
-            //ElementDic[DefaultKey] = DefaultValue;
-            ApplyValue();
-            return Current;
-        }
-    }
+    //    public override int RemoveAll()
+    //    {
+    //        ElementDic.Clear();
+    //        //ElementDic[DefaultKey] = DefaultValue;
+    //        ApplyValue();
+    //        return Current;
+    //    }
+    //}
 
     /// <summary>
     /// 不要序列化这个类
@@ -121,12 +121,14 @@ namespace Megumin.GameFramework.Numerical
         public event Megumin.OnValueChanged<int> ValueChange;
     }
 
+    //[Obsolete("过时", true)]
     public interface INumericalPropertyFinder
     {
         //int? Find(NumericalType type);
         bool TryGetValue(NumericalType type, out NumericalProperty2 value);
     }
 
+    //[Obsolete("过时",true)]
     [Serializable]
     public class PropertyChange : ISerializationCallbackReceiver
     {
@@ -139,7 +141,7 @@ namespace Megumin.GameFramework.Numerical
         /// 常数项
         /// </summary>
         public int ConstValue = 0;
-        
+
         [HelpBox("在所有因子计算完毕后应用这个因子,默认值为 1")]
         [ProtectedInInspector]
         public float GlobalFactor = 1;
@@ -148,7 +150,7 @@ namespace Megumin.GameFramework.Numerical
         /// 受其他属性影响的系数,比如额外恢复防御力5%的血量
         /// </summary>
         [Serializable]
-        public class PropertyFactor:ISerializationCallbackReceiver
+        public class PropertyFactor : ISerializationCallbackReceiver
         {
             [HideInInspector]
             public string ElementName;
@@ -166,7 +168,7 @@ namespace Megumin.GameFramework.Numerical
 
             public void OnAfterDeserialize()
             {
-                
+
             }
         }
 
@@ -216,10 +218,11 @@ namespace Megumin.GameFramework.Numerical
 
         public void OnAfterDeserialize()
         {
-            
+
         }
     }
 
+    //[Obsolete("过时", true)]
     public class NumericalObject : INumericalPropertyFinder
     {
         public Dictionary<NumericalType, NumericalProperty2> NumericalProperty { get; internal set; }
@@ -227,7 +230,7 @@ namespace Megumin.GameFramework.Numerical
 
         public int ChangeProperty(PropertyChange PropertyChange)
         {
-            if (NumericalProperty.TryGetValue(PropertyChange.TargetType,out var prop))
+            if (NumericalProperty.TryGetValue(PropertyChange.TargetType, out var prop))
             {
                 PropertyChange.CalFinalChangeValue(this);
                 var newv = prop.BaseValue + PropertyChange.LastCalValue;

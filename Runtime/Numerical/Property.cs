@@ -8,7 +8,7 @@ namespace Megumin.GameFramework.Numerical
     /// <summary>
     /// 可作为别的属性的子的属性
     /// </summary>
-    public class ChildPorperty
+    public abstract class Porperty
     {
         public string Type;
         public string MainType;
@@ -20,7 +20,7 @@ namespace Megumin.GameFramework.Numerical
         /// <summary>
         /// Todo改为事件，事件节省空间，不用申请数组内存
         /// </summary>
-        public List<ChildPorperty> RefBy = new List<ChildPorperty>();
+        public List<Porperty> RefBy = new List<Porperty>();
 
         public virtual void BroadCastRefBy()
         {
@@ -61,7 +61,7 @@ namespace Megumin.GameFramework.Numerical
     /// <summary>
     /// 常数属性
     /// </summary>
-    public class ConstValuePorperty : ChildPorperty
+    public class ConstValuePorperty : Porperty
     {
         public void SetValue(double Value)
         {
@@ -69,71 +69,80 @@ namespace Megumin.GameFramework.Numerical
         }
     }
 
+    public class ChildProperty
+    {
+        public double ConstValue;
+        public Porperty Connect;
+        public double Scale;
+        public object Source;
+
+        /// <summary>
+        /// TODO 多态此类型，优化计算？优化计算和虚函数哪个效率更好？
+        /// </summary>
+        /// <returns></returns>
+        public double Cal()
+        {
+            double v = ConstValue + Connect?.DValue ?? 0;
+            v *= Scale;
+            return v;
+        }
+
+        public override string ToString()
+        {
+            return $"{Source}--{Connect}--ConstValue:{ConstValue}--Scale:{Scale}";
+        }
+    }
+
     /// <summary>
     /// 组合属性，需要运算的属性，多个子运算得到结果
     /// </summary>
-    public abstract class CombinePoperty : ChildPorperty
+    public abstract class CombinePoperty : Porperty
     {
-        public class ChildProperty
-        {
-            public double ConstValue;
-            public ChildPorperty Connect;
-            public double Scale;
-            public object Source;
+        protected List<ChildProperty> Children { get; } = new List<ChildProperty>();
 
-            public double Cal()
-            {
-                double v = ConstValue + Connect?.DValue ?? 0;
-                v *= Scale;
-                return v;
-            }
-
-            public override string ToString()
-            {
-                return $"{Source}--{Connect}--ConstValue:{ConstValue}--Scale:{Scale}";
-            }
-        }
-
-        protected List<ChildProperty> children { get; } = new List<ChildProperty>();
-
-        public void Add(object souce, double baseV, ChildPorperty property, double factor)
+        public void Add(object souce, double baseV, Porperty property, double scale)
         {
             ChildProperty child = new ChildProperty()
             {
                 ConstValue = baseV,
                 Connect = property,
                 Source = souce,
-                Scale = factor,
+                Scale = scale,
             };
 
-            children.Add(child);
+            Add(child);
+        }
 
-            if (property != null)
+        public void Add(ChildProperty child)
+        {
+            Children.Add(child);
+
+            if (child.Connect != null)
             {
-                property.RefBy.Add(this);
+                child.Connect.RefBy.Add(this);
             }
 
             ReCalValue();
         }
 
-        public void Add(ChildPorperty p)
+        public void Add(Porperty p)
         {
             Add(null, 0, p, 1);
         }
 
-        public void Add(object souce, ChildPorperty p, double factor = 1)
+        public void Add(object souce, Porperty p, double scale = 1)
         {
-            Add(souce, 0, p, factor);
+            Add(souce, 0, p, scale);
         }
 
-        public void Add(object souce, double constV, double factor = 1)
+        public void Add(object souce, double constV, double scale = 1)
         {
-            Add(souce, constV, null, factor);
+            Add(souce, constV, null, scale);
         }
 
         public void Remove(object source)
         {
-            children.RemoveAll(ele => ele.Source == source);
+            Children.RemoveAll(ele => ele.Source == source);
             ReCalValue();
         }
 
@@ -156,7 +165,7 @@ namespace Megumin.GameFramework.Numerical
         protected override double OprationChild()
         {
             double v = 0;
-            foreach (var item in children)
+            foreach (var item in Children)
             {
                 v += item.Cal();
             }
@@ -180,7 +189,7 @@ namespace Megumin.GameFramework.Numerical
         protected override double OprationChild()
         {
             double sum = 0;
-            foreach (var item in children)
+            foreach (var item in Children)
             {
                 sum += item.Cal();
             }
@@ -189,20 +198,39 @@ namespace Megumin.GameFramework.Numerical
         }
     }
 
-    public class ItemPropertyPostCombindProp
+
+    /// <summary>
+    /// 固定数值
+    /// </summary>
+    [Obsolete("不良设计", true)]
+    class FixValueActor
     {
-        public ConstValuePorperty 基础值 = new();
+        int HPMax;
+        int HP;
+        int MPMax;
+        int MP;
 
-        public SumChildPopperty 装备固定加成 = new();
-        public SumChildPopperty 装备系数加成 = new();
-        public LayerProperty 力装备加成后总计 = new();
+        public int GetProp(string type)
+        {
+            switch (type)
+            {
+                default:
+                    break;
+            }
+            return default;
+        }
+    }
 
-        public SumChildPopperty 属性关联固定加成 = new();
-        public SumChildPopperty 属性关联系数加成 = new();
-        public LayerProperty 属性关联后总计 = new();
-
-        public SumChildPopperty 后期固定加成 = new();
-        public SumChildPopperty 后期系数加成 = new();
-        public LayerProperty 面板值 = new();
+    /// <summary>
+    /// 双向链表结构
+    /// </summary>
+    [Obsolete("不良设计", true)]
+    class LinkNodeProp
+    {
+        LinkNodeProp Prev;
+        LinkNodeProp Next;
+        int Offset;
+        double scalle;
+        double CurrentValue;
     }
 }

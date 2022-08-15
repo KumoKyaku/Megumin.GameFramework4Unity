@@ -7,27 +7,6 @@ using UnityEngine.Networking.Types;
 namespace Megumin.GameFramework.Numerical
 {
     /// <summary>
-    /// 数值属性的最基本功能
-    /// </summary>
-    public interface IProperty
-    {
-        /// <summary>
-        /// 当前值
-        /// </summary>
-        int Value { get; }
-        event OnValueChanged<int> ValueChange;
-    }
-
-    public interface IPropertyWithSource : IProperty
-    {
-        /// <summary>
-        /// 最后数值变动的原因
-        /// </summary>
-        object Source { get; }
-        event OnValueChanged<(object Source, int Value)> SourceValueChanged;
-    }
-
-    /// <summary>
     /// 可作为别的属性的子的属性
     /// </summary>
     public abstract class Porperty : IProperty, IPropertyWithSource
@@ -98,7 +77,7 @@ namespace Megumin.GameFramework.Numerical
     /// <summary>
     /// 常数属性
     /// </summary>
-    public class ConstValuePorperty : Porperty
+    public class ConstValuePorperty : Porperty, ISetValueable<float>
     {
         public void SetValue(float Value)
         {
@@ -140,19 +119,32 @@ namespace Megumin.GameFramework.Numerical
     }
 
     /// <summary>
+    /// <para/>参数类型已经与项目相关，这个接口没有办法定义在标准接口中
+    /// </summary>
+    public interface ICombineable
+    {
+        void Add(ChildProperty child);
+        void Add(object source, float constValue, float scale = 1);
+        void Add(object source, float constValue, Porperty property, float scale);
+        void Add(object source, Porperty property, float scale = 1);
+        void Add(Porperty property);
+        void Remove(object source);
+    }
+
+    /// <summary>
     /// 组合属性，需要运算的属性，多个子运算得到结果
     /// </summary>
-    public abstract class CombinePoperty : Porperty
+    public abstract class CombinePoperty : Porperty, ICombineable
     {
         protected List<ChildProperty> Children { get; } = new List<ChildProperty>();
 
-        public void Add(object souce, float baseV, Porperty property, float scale)
+        public void Add(object source, float constValue, Porperty property, float scale)
         {
             ChildProperty child = new ChildProperty()
             {
-                ConstValue = baseV,
+                ConstValue = constValue,
                 Connect = property,
-                Source = souce,
+                Source = source,
                 Scale = scale,
             };
 
@@ -171,19 +163,19 @@ namespace Megumin.GameFramework.Numerical
             ReCalValue(child.Source);
         }
 
-        public void Add(Porperty p)
+        public void Add(Porperty property)
         {
-            Add(null, 0, p, 1);
+            Add(null, 0, property, 1);
         }
 
-        public void Add(object souce, Porperty p, float scale = 1)
+        public void Add(object source, Porperty property, float scale = 1)
         {
-            Add(souce, 0, p, scale);
+            Add(source, 0, property, scale);
         }
 
-        public void Add(object souce, float constV, float scale = 1)
+        public void Add(object source, float constValue, float scale = 1)
         {
-            Add(souce, constV, null, scale);
+            Add(source, constValue, null, scale);
         }
 
         public void Remove(object source)

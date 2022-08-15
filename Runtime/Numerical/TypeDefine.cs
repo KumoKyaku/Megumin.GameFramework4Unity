@@ -7,7 +7,7 @@ namespace Megumin.GameFramework.Numerical
     //不要定义主属性，由项目自己绝对
     //public class MainNumericalType
     //{
-        
+
     //}
 
     /// <summary>

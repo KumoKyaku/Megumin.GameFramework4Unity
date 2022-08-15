@@ -5,11 +5,6 @@ using System;
 
 namespace Megumin.GameFramework.Numerical
 {
-    public interface IPropertyConfig
-    {
-        string Type { get; }
-    }
-
     /// <summary>
     /// 伤害配置
     /// </summary>
@@ -32,7 +27,7 @@ namespace Megumin.GameFramework.Numerical
     /// </summary>
     public interface IPropertyFinder
     {
-        bool TryGetValue(string type, out double dValue);
+        bool TryGetValue(string type, out float fValue);
         bool TryGetPorperty(string type, out Porperty porperty);
     }
 }

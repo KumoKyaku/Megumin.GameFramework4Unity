@@ -15,7 +15,7 @@ namespace Megumin.GameFramework.Numerical
         public const string $(ClassName) = nameof($(ClassName));
     }
 
-    public partial class $(ClassName)_Property_Generic
+    public partial class $(ClassName)_Property_Generic : IProperty
     {
         public Dictionary<string, Porperty> allP = new Dictionary<string, Porperty>();
 
@@ -24,6 +24,22 @@ namespace Megumin.GameFramework.Numerical
         public SumChildPopperty 装备固定加成 = new() { Type = NumericalPropertyTypeDefine.$(ClassName)装备固定加成 };
         public SumChildPopperty 装备系数加成 = new() { Type = NumericalPropertyTypeDefine.$(ClassName)装备系数加成 };
         public LayerProperty 面板值 = new() { Type = NumericalPropertyTypeDefine.$(ClassName) };
+
+        public int Value => 面板值.Value;
+        public float FValue => 面板值.FValue;
+
+        public event OnValueChanged<int> ValueChange
+        {
+            add
+            {
+                面板值.ValueChange += value;
+            }
+
+            remove
+            {
+                面板值.ValueChange -= value;
+            }
+        }
 
         public $(ClassName)_Property_Generic()
         {

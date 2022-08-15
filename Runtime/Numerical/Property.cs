@@ -2,46 +2,83 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking.Types;
 
 namespace Megumin.GameFramework.Numerical
 {
     /// <summary>
+    /// 数值属性的最基本功能
+    /// </summary>
+    public interface IProperty
+    {
+        /// <summary>
+        /// 当前值
+        /// </summary>
+        int Value { get; }
+        event OnValueChanged<int> ValueChange;
+    }
+
+    public interface IPropertyWithSource : IProperty
+    {
+        /// <summary>
+        /// 最后数值变动的原因
+        /// </summary>
+        object Source { get; }
+        event OnValueChanged<(object Source, int Value)> SourceValueChanged;
+    }
+
+    /// <summary>
     /// 可作为别的属性的子的属性
     /// </summary>
-    public abstract class Porperty
+    public abstract class Porperty : IProperty, IPropertyWithSource
     {
         public string Type;
         public string MainType;
         public string SubType;
         public int Value { get; private set; }
+        /// <summary>
+        /// 通常用于中间环节计算，防止累计误差
+        /// </summary>
         public float FValue { get; private set; }
         public bool BroadCast = false;
+        /// <summary>
+        /// 最后数值变动的原因
+        /// </summary>
+        public object Source { get; private set; }
 
         /// <summary>
         /// Todo改为事件，事件节省空间，不用申请数组内存
         /// </summary>
         public List<Porperty> RefBy = new List<Porperty>();
 
-        public virtual void BroadCastRefBy()
+        public virtual void BroadCastRefBy(object source)
         {
             if (BroadCast)
             {
                 foreach (var item in RefBy)
                 {
-                    item.ReCalValue();
+                    item.ReCalValue(source);
                 }
             }
         }
 
-        public virtual void ReCalValue() { }
+        public virtual void ReCalValue(object source) { }
 
-        protected void SetNewValue(float newValue)
+        public event OnValueChanged<int> ValueChange;
+        public event OnValueChanged<(object Source, int Value)> SourceValueChanged;
+
+        protected void SetNewValue(object source, float newValue)
         {
             if (FValue != newValue)
             {
+                var old = Value;
+                var oldSource = Source;
                 FValue = newValue;
                 Value = (int)newValue;
-                BroadCastRefBy();
+                Source = source;
+                ValueChange?.Invoke(Value, old);
+                SourceValueChanged?.Invoke((source, Value), (oldSource, old));
+                BroadCastRefBy(source);
             }
         }
 
@@ -65,7 +102,12 @@ namespace Megumin.GameFramework.Numerical
     {
         public void SetValue(float Value)
         {
-            SetNewValue(Value);
+            SetNewValue(null, Value);
+        }
+
+        public void SetValue(object source, float Value)
+        {
+            SetNewValue(source, Value);
         }
     }
 
@@ -126,7 +168,7 @@ namespace Megumin.GameFramework.Numerical
                 child.Connect.RefBy.Add(this);
             }
 
-            ReCalValue();
+            ReCalValue(child.Source);
         }
 
         public void Add(Porperty p)
@@ -147,14 +189,14 @@ namespace Megumin.GameFramework.Numerical
         public void Remove(object source)
         {
             Children.RemoveAll(ele => ele.Source == source);
-            ReCalValue();
+            ReCalValue(source);
         }
 
-        public override void ReCalValue()
+        public override void ReCalValue(object source)
         {
             float v = OprationChild();
 
-            SetNewValue(v);
+            SetNewValue(source, v);
         }
 
         /// <summary>
@@ -187,7 +229,7 @@ namespace Megumin.GameFramework.Numerical
             LayerScale = property;
             property.RefBy.Add(this);
 
-            ReCalValue();
+            ReCalValue(null);
         }
 
         protected override float OprationChild()

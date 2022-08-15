@@ -46,6 +46,8 @@ namespace Megumin.GameFramework.Numerical
         }
     }
 
+
+
     //public sealed class ExtraValueIntMultipleValue : IntMultipleValue<object>
     //{
     //    //public ExtraValueIntMultipleValue(object key, int v = default)
@@ -66,7 +68,7 @@ namespace Megumin.GameFramework.Numerical
     /// <summary>
     /// 不要序列化这个类
     /// </summary>
-    public class NumericalProperty2
+    public class NumericalProperty2 : IProperty
     {
         public NumericalType Type;
 

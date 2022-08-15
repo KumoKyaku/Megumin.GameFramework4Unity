@@ -46,8 +46,6 @@ namespace Megumin.GameFramework.Numerical
         }
     }
 
-
-
     //public sealed class ExtraValueIntMultipleValue : IntMultipleValue<object>
     //{
     //    //public ExtraValueIntMultipleValue(object key, int v = default)
@@ -68,6 +66,7 @@ namespace Megumin.GameFramework.Numerical
     /// <summary>
     /// 不要序列化这个类
     /// </summary>
+    [Obsolete("过时", true)]
     public class NumericalProperty2 : IProperty
     {
         public NumericalType Type;
@@ -123,14 +122,14 @@ namespace Megumin.GameFramework.Numerical
         public event Megumin.OnValueChanged<int> ValueChange;
     }
 
-    //[Obsolete("过时", true)]
+    [Obsolete("过时", true)]
     public interface INumericalPropertyFinder
     {
         //int? Find(NumericalType type);
         bool TryGetValue(NumericalType type, out NumericalProperty2 value);
     }
 
-    //[Obsolete("过时",true)]
+    [Obsolete("过时", true)]
     [Serializable]
     public class PropertyChange : ISerializationCallbackReceiver
     {
@@ -224,7 +223,7 @@ namespace Megumin.GameFramework.Numerical
         }
     }
 
-    //[Obsolete("过时", true)]
+    [Obsolete("过时", true)]
     public class NumericalObject : INumericalPropertyFinder
     {
         public Dictionary<NumericalType, NumericalProperty2> NumericalProperty { get; internal set; }

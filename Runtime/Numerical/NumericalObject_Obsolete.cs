@@ -7,6 +7,7 @@ using Megumin;
 
 namespace Megumin.GameFramework.Numerical
 {
+    [Obsolete("过时", true)]
     public enum NumericalType
     {
         HP,

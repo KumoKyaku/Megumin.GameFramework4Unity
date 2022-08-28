@@ -10,7 +10,7 @@ namespace Megumin.GameFramework.Item
         GameObject ModelPrefab { get; set; }
         GameObject Prefab { get; set; }
 
-        GameObject CreateItemInWorld(Vector3 position, HideFlags hideFlags);
+        GameObject CreateItemInWorld(Vector3 position, HideFlags hideFlags = default);
         void TestCreate(Vector3 position);
     }
 }

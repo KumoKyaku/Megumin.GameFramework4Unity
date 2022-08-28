@@ -68,7 +68,7 @@ namespace Megumin.GameFramework.Sensor
             }
         }
 
-        [EditorButton]
+        [Button]
         public void SwitchGlobalToggle()
         {
             GlobalDebugShow.Value = !GlobalDebugShow;

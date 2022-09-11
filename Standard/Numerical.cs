@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,8 +8,9 @@ namespace Megumin.GameFramework.Numerical
 {
     /// <summary>
     /// 数值属性的最基本功能
+    /// <para>支持观察者模式</para>
     /// </summary>
-    public interface IProperty
+    public interface IProperty : IObservable<int>
     {
         /// <summary>
         /// 当前值
@@ -17,7 +19,11 @@ namespace Megumin.GameFramework.Numerical
         event OnValueChanged<int> ValueChange;
     }
 
-    public interface IPropertyWithSource : IProperty
+    /// <summary>
+    /// <inheritdoc/>
+    /// 具有最后修改数据源的属性
+    /// </summary>
+    public interface IPropertyWithSource : IProperty, IObservable<(object Source, int Value)>
     {
         /// <summary>
         /// 最后数值变动的原因

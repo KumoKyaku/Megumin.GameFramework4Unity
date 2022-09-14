@@ -10,32 +10,52 @@ namespace Megumin.GameFramework.Numerical
     /// 数值属性的最基本功能
     /// <para>支持观察者模式</para>
     /// </summary>
-    public interface IProperty : IObservable<int>
+    public interface IProperty<out V> : IObservable<V>
     {
         /// <summary>
-        /// 当前值
+        /// 当前值，用于计算，防止累计误差。
         /// </summary>
-        int Value { get; }
-        event OnValueChanged<int> ValueChange;
+        V Value { get; }
+        event OnValueChanged<V> ValueChanged;
     }
 
     /// <summary>
     /// <inheritdoc/>
     /// 具有最后修改数据源的属性
     /// </summary>
-    public interface IPropertyWithSource : IProperty, IObservable<(object Source, int Value)>
+    public interface IPropertyWithSource<S, V> : IProperty<V>, IObservable<(S Source, V Value)>
     {
         /// <summary>
         /// 最后数值变动的原因
         /// </summary>
-        object Source { get; }
-        event OnValueChanged<(object Source, int Value)> SourceValueChanged;
+        S Source { get; }
+        event OnValueChanged<(S Source, V Value)> SourceValueChanged;
     }
 
-    public interface ISetValueable<in T>
+    /// <summary>
+    /// 数值属性的最基本功能
+    /// <para>支持观察者模式</para>
+    /// </summary>
+    public interface IProperty : IProperty<float>
     {
-        void SetValue(T Value);
-        void SetValue(object source, T Value);
+        /// <summary>
+        /// 当前值，用于UI，或者粗略判断等，不用每次从float转型。
+        /// </summary>
+        int IntValue { get; }
+    }
+
+    /// <summary>
+    /// <inheritdoc/>
+    /// 具有最后修改数据源的属性
+    /// </summary>
+    public interface IPropertyWithSource : IProperty, IPropertyWithSource<object, float>
+    {
+    }
+
+    public interface ISetValueable<in V>
+    {
+        void SetValue(V Value);
+        void SetValue(object source, V Value);
     }
 
     public interface IPropertyConfig<out T>

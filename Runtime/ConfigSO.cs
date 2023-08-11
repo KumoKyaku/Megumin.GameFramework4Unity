@@ -31,11 +31,24 @@ namespace Megumin.GameFramework
         /// </summary>
         [field: TextArea(1, 15)]
         [field: SerializeField]
+        public string Comment { get; set; }
+
+        /// <summary>
+        /// 实质,灵感来源等,开发者备注
+        /// </summary>
+        [field: TextArea(1, 15)]
+        [field: SerializeField]
         public string DeveloperNotes { get; set; }
     }
 
     public class ConfigSO : ScriptableObject, IMetaGUIDable, ITypeIDable<long>
     {
+        ///// <summary>
+        ///// TODO
+        ///// </summary>
+        //[field: SerializeField]
+        //public ConfigHeader Header { get; set; }    
+
         [field: SerializeField]
         [field: MetaGUID]
         public string MetaGUID { get; set; }

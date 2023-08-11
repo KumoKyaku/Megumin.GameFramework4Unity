@@ -3,7 +3,8 @@
     "rootNamespace": "Megumin.GameFramework",
     "references": [
         "GUID:dfb0db5c949e20746befeff7a094fa1c",
-        "GUID:a7ea6e0cfdff706448b2f39196561187"
+        "GUID:a7ea6e0cfdff706448b2f39196561187",
+        "GUID:293b3db1567cc8e479b4623ded498cfa"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
